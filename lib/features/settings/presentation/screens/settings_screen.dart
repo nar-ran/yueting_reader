@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 
 // Pantalla de ajustes de la aplicacion para configurar motores de voz, idioma y aspecto visual
 class SettingsScreen extends StatefulWidget {
@@ -99,12 +100,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FB), // Fondo premium gris suave
       appBar: AppBar(
-        title: const Text(
-          'Configuración',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        title: Text(
+          l10n.settings_title,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         backgroundColor: Colors.white,
         elevation: 0.5,
@@ -116,16 +118,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           _buildTtsAccordion(),
           const SizedBox(height: 24),
-          _buildSectionTitle('Idioma de Lectura (Voz)'),
+          _buildSectionTitle(l10n.settings_reading_lang_section),
           const SizedBox(height: 12),
           _buildDropdownTile(
-            title: 'Idioma de síntesis',
-            subtitle: 'Idioma o acento para leer el texto en chino',
+            title: l10n.settings_synthesis_lang,
+            subtitle: l10n.settings_synthesis_lang_sub,
             value: _voiceLanguage,
-            items: const [
-              DropdownMenuItem(value: 'zh-CN', child: Text('Chino Mandarín (zh-CN)')),
-              DropdownMenuItem(value: 'zh-TW', child: Text('Mandarín de Taiwán (zh-TW)')),
-              DropdownMenuItem(value: 'zh-HK', child: Text('Cantonés de Hong Kong (zh-HK)')),
+            items: [
+              DropdownMenuItem(value: 'zh-CN', child: Text(l10n.settings_lang_mandarin)),
+              DropdownMenuItem(value: 'zh-TW', child: Text(l10n.settings_lang_taiwan)),
+              DropdownMenuItem(value: 'zh-HK', child: Text(l10n.settings_lang_cantonese)),
             ],
             onChanged: (val) {
               if (val != null) {
@@ -134,11 +136,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           const SizedBox(height: 24),
-          _buildSectionTitle('Idioma de la Aplicación'),
+          _buildSectionTitle(l10n.settings_app_lang_section),
           const SizedBox(height: 12),
           _buildDropdownTile(
-            title: 'Idioma de interfaz',
-            subtitle: 'Idioma del menú y traducciones de la app',
+            title: l10n.settings_app_lang_label,
+            subtitle: l10n.settings_app_lang_sub,
             value: _appLanguage,
             items: const [
               DropdownMenuItem(value: 'es', child: Text('Español')),
@@ -151,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           const SizedBox(height: 24),
-          _buildSectionTitle('Tamaño de Texto del Lector'),
+          _buildSectionTitle(l10n.settings_text_size_section),
           const SizedBox(height: 12),
           _buildFontSizeCard(),
           const SizedBox(height: 40),
@@ -175,10 +177,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Construye la seccion de seleccion de motor de voz tipo acordeon
   Widget _buildTtsAccordion() {
-    String engineTitle = 'Google System TTS';
-    if (_selectedEngine == 'edge') engineTitle = 'Microsoft Edge TTS';
-    if (_selectedEngine == 'azure') engineTitle = 'Microsoft Azure Speech';
-    if (_selectedEngine == 'openai') engineTitle = 'OpenAI TTS';
+    final l10n = AppLocalizations.of(context)!;
+    String engineTitle = l10n.settings_system_tts_title;
+    if (_selectedEngine == 'edge') engineTitle = l10n.settings_edge_tts_title;
+    if (_selectedEngine == 'azure') engineTitle = l10n.settings_azure_tts_title;
+    if (_selectedEngine == 'openai') engineTitle = l10n.settings_openai_tts_title;
 
     return Container(
       decoration: BoxDecoration(
@@ -190,9 +193,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           // Fila del encabezado que actua como boton para expandir o contraer
           ListTile(
-            title: const Text(
-              'Motor de Voz (TTS)',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black54),
+            title: Text(
+              l10n.settings_tts_section,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black54),
             ),
             subtitle: Text(
               engineTitle,
@@ -221,9 +224,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Tarjeta Google System TTS
                   _buildEngineCard(
                     id: 'system',
-                    title: 'Google System TTS',
-                    description: 'Usa el motor nativo del celular. No consume datos y es 100% offline.',
-                    tags: ['Offline', '0 MB', 'Rápido'],
+                    title: l10n.settings_system_tts_title,
+                    description: l10n.settings_system_tts_desc,
+                    tags: [l10n.settings_tag_offline, l10n.settings_tag_zero_mb, l10n.settings_tag_fast],
                     isRecommended: false,
                   ),
                   const SizedBox(height: 12),
@@ -231,9 +234,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Tarjeta Microsoft Edge TTS
                   _buildEngineCard(
                     id: 'edge',
-                    title: 'Microsoft Edge TTS',
-                    description: 'Voces neuronales de ultra alta calidad en la nube. Requiere conexión activa.',
-                    tags: ['Online', 'Ultra Calidad', 'Gratis'],
+                    title: l10n.settings_edge_tts_title,
+                    description: l10n.settings_edge_tts_desc,
+                    tags: [l10n.settings_tag_online, l10n.settings_tag_ultra_quality, l10n.settings_tag_free],
                     isRecommended: true,
                   ),
                   const SizedBox(height: 12),
@@ -241,9 +244,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Tarjeta Microsoft Azure Speech
                   _buildEngineCard(
                     id: 'azure',
-                    title: 'Microsoft Azure Speech',
-                    description: 'Servicio en la nube premium con soporte oficial y alta estabilidad.',
-                    tags: ['Online', 'Premium', 'Clave API'],
+                    title: l10n.settings_azure_tts_title,
+                    description: l10n.settings_azure_tts_desc,
+                    tags: [l10n.settings_tag_online, l10n.settings_tag_premium, l10n.settings_tag_api_key],
                     isRecommended: false,
                   ),
                   if (_selectedEngine == 'azure') ...[
@@ -255,9 +258,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Tarjeta OpenAI TTS
                   _buildEngineCard(
                     id: 'openai',
-                    title: 'OpenAI TTS',
-                    description: 'Voces neuronales de OpenAI de gran expresividad.',
-                    tags: ['Online', 'Premium', 'Clave API'],
+                    title: l10n.settings_openai_tts_title,
+                    description: l10n.settings_openai_tts_desc,
+                    tags: [l10n.settings_tag_online, l10n.settings_tag_premium, l10n.settings_tag_api_key],
                     isRecommended: false,
                   ),
                   if (_selectedEngine == 'openai') ...[
@@ -284,6 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required bool isRecommended,
   }) {
     final isSelected = _selectedEngine == id;
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: () => _updateEngine(id),
       borderRadius: BorderRadius.circular(16),
@@ -330,9 +334,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color: Colors.green.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Text(
-                            'Recomendado',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.settings_recommended_badge,
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
@@ -394,6 +398,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Campos de texto para la configuracion de Microsoft Azure Speech
   Widget _buildAzureInputs() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -408,7 +413,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (val) => _settingsBox.put('azure_api_key', val.trim()),
             style: const TextStyle(fontSize: 13),
             decoration: InputDecoration(
-              labelText: 'Clave API de Azure',
+              labelText: l10n.settings_azure_api_key,
               isDense: true,
               suffixIcon: IconButton(
                 icon: Icon(_obscureAzureKey ? Icons.visibility : Icons.visibility_off, size: 18),
@@ -423,7 +428,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (val) => _settingsBox.put('azure_region', val.trim()),
             style: const TextStyle(fontSize: 13),
             decoration: InputDecoration(
-              labelText: 'Región de Azure (ej. eastus)',
+              labelText: l10n.settings_azure_region,
               isDense: true,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             ),
@@ -435,6 +440,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Campos de texto para la configuracion de OpenAI TTS
   Widget _buildOpenAiInputs() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -450,7 +456,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (val) => _settingsBox.put('openai_api_key', val.trim()),
             style: const TextStyle(fontSize: 13),
             decoration: InputDecoration(
-              labelText: 'Clave API de OpenAI',
+              labelText: l10n.settings_openai_api_key,
               isDense: true,
               suffixIcon: IconButton(
                 icon: Icon(_obscureOpenaiKey ? Icons.visibility : Icons.visibility_off, size: 18),
@@ -463,7 +469,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Voz de OpenAI', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              Text(l10n.settings_openai_voice, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
               DropdownButton<String>(
                 value: _openaiVoice,
                 underline: const SizedBox.shrink(),
@@ -551,6 +557,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Muestra una tarjeta con un control deslizante y vista previa del tamaño de fuente
   Widget _buildFontSizeCard() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -592,9 +599,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 16),
           const Divider(),
           const SizedBox(height: 8),
-          const Text(
-            'Vista previa:',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black45),
+          Text(
+            l10n.settings_preview_label,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black45),
           ),
           const SizedBox(height: 8),
           // Muestra un ejemplo de como se vera el Hanzi y Pinyin con la escala actual

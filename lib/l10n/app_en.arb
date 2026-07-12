@@ -1,0 +1,123 @@
+{
+  "@@locale": "en",
+
+  "sectionCommon": "========== COMMON / SYSTEM ==========",
+  "common_cancel": "Cancel",
+  "common_save": "Save",
+  "common_accept": "Accept",
+  "common_error": "An error occurred",
+  "common_back": "Back",
+  "common_delete": "Delete",
+  "common_rename": "Rename",
+
+  "sectionHome": "========== HOME SCREEN ==========",
+  "home_title": "YuèTīng 阅听",
+  "home_subtitle": "Paste any Chinese text to read it with aligned Pinyin and instant interactive offline translation.",
+  "home_input_hint": "Paste Chinese characters (Hanzi) here...",
+  "home_input_title_hint": "Text title (optional)",
+  "home_input_section": "Enter new text",
+  "home_start_reading": "Start Reading",
+  "home_library_tooltip": "Library",
+  "home_settings_tooltip": "Settings",
+  "home_continue_reading": "Continue Reading",
+  "home_no_recent_readings": "No recent readings. Paste text above to start!",
+  "home_dict_downloading": "Downloading dictionary: {progress}%",
+  "@home_dict_downloading": {
+    "placeholders": {
+      "progress": { "type": "String" }
+    }
+  },
+  "home_dict_extracting": "Extracting files...",
+  "home_dict_loading": "Loading dictionary in memory...",
+  "home_dict_ready": "Dictionary ready",
+  "home_dict_error": "Error initializing dictionary: {error}",
+  "@home_dict_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "home_loader_desc": "This is only required on the first launch to set up the offline translation dictionary (MDBG CC-CEDICT).",
+  "home_error_title": "Oops! There was a problem",
+  "home_retry": "Retry",
+  "home_examples_section": "Quick examples to try",
+  "home_empty_input_error": "Please enter or paste Chinese text.",
+  "home_example_1_title": "Basic Greetings",
+  "home_example_2_title": "Hobbies",
+  "home_example_3_title": "Tang Dynasty Poem",
+
+  "sectionLibrary": "========== LIBRARY SCREEN ==========",
+  "library_title": "Library",
+  "library_search_hint": "Search saved texts...",
+  "library_empty_title": "Your library is empty",
+  "library_empty_subtitle": "Texts you read will be saved here automatically so you can resume them at any time.",
+  "library_no_results_title": "No results",
+  "library_no_results_subtitle": "No texts matched your search.",
+  "library_delete_confirm_title": "Delete text",
+  "library_delete_confirm_message": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+  "@library_delete_confirm_message": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "library_rename_title": "Rename text",
+  "library_rename_hint": "New title...",
+
+  "sectionSettings": "========== SETTINGS SCREEN ==========",
+  "settings_title": "Settings",
+  "settings_tts_section": "Voice Engine (TTS)",
+  "settings_system_tts_title": "Google System TTS",
+  "settings_system_tts_desc": "Uses the device's native engine. Works offline and consumes no extra data.",
+  "settings_edge_tts_title": "Microsoft Edge TTS",
+  "settings_edge_tts_desc": "Ultra high-quality neural voices in the cloud. Requires active internet connection.",
+  "settings_azure_tts_title": "Microsoft Azure Speech",
+  "settings_azure_tts_desc": "Premium cloud service with official support and high stability.",
+  "settings_openai_tts_title": "OpenAI TTS",
+  "settings_openai_tts_desc": "OpenAI's highly expressive neural voices.",
+  "settings_azure_api_key": "Azure API Key",
+  "settings_azure_region": "Azure Region (e.g. eastus)",
+  "settings_openai_api_key": "OpenAI API Key",
+  "settings_openai_voice": "OpenAI Voice",
+  "settings_reading_lang_section": "Reading Language (Voice)",
+  "settings_synthesis_lang": "Synthesis language",
+  "settings_synthesis_lang_sub": "Language or accent to read Chinese text",
+  "settings_lang_mandarin": "Mandarin Chinese (zh-CN)",
+  "settings_lang_taiwan": "Taiwanese Mandarin (zh-TW)",
+  "settings_lang_cantonese": "Hong Kong Cantonese (zh-HK)",
+  "settings_app_lang_section": "Application Language",
+  "settings_app_lang_label": "Interface language",
+  "settings_app_lang_sub": "Language for menus and app translations",
+  "settings_text_size_section": "Reader Text Size",
+  "settings_preview_label": "Preview:",
+  "settings_recommended_badge": "Recommended",
+  "settings_tag_offline": "Offline",
+  "settings_tag_online": "Online",
+  "settings_tag_zero_mb": "0 MB",
+  "settings_tag_fast": "Fast",
+  "settings_tag_ultra_quality": "Ultra Quality",
+  "settings_tag_free": "Free",
+  "settings_tag_premium": "Premium",
+  "settings_tag_api_key": "API Key",
+
+  "sectionReader": "========== READER SCREEN ==========",
+  "reader_title_fallback": "Reading",
+  "reader_processing": "Processing text and pinyin...",
+  "reader_status_ready": "Ready",
+  "reader_status_playing": "Playing",
+  "reader_status_paused": "Paused",
+  "reader_speed_label": "Speed: {speed}x",
+  "@reader_speed_label": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
+
+  "sectionBottomSheet": "========== TRANSLATION BOTTOM SHEET ==========",
+  "sheet_definitions": "Definitions",
+  "sheet_traditional": "Traditional: {text}",
+  "@sheet_traditional": {
+    "placeholders": {
+      "text": { "type": "String" }
+    }
+  },
+  "sheet_no_translation": "No translation found in local dictionary for this word."
+}

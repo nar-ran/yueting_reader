@@ -1,0 +1,123 @@
+{
+  "@@locale": "es",
+
+  "sectionCommon": "========== COMMON / SYSTEM ==========",
+  "common_cancel": "Cancelar",
+  "common_save": "Guardar",
+  "common_accept": "Aceptar",
+  "common_error": "Ha ocurrido un error",
+  "common_back": "Atrás",
+  "common_delete": "Eliminar",
+  "common_rename": "Renombrar",
+
+  "sectionHome": "========== HOME SCREEN ==========",
+  "home_title": "YuèTīng 阅听",
+  "home_subtitle": "Pega cualquier texto en chino mandarín para leerlo con Pinyin alineado y traducción interactiva offline al instante.",
+  "home_input_hint": "Pega aquí el texto en caracteres chinos (Hanzi)...",
+  "home_input_title_hint": "Título del texto (opcional)",
+  "home_input_section": "Ingresar nuevo texto",
+  "home_start_reading": "Comenzar Lectura",
+  "home_library_tooltip": "Biblioteca",
+  "home_settings_tooltip": "Configuración",
+  "home_continue_reading": "Continuar Leyendo",
+  "home_no_recent_readings": "No tienes lecturas recientes. ¡Pega un texto arriba para comenzar!",
+  "home_dict_downloading": "Descargando diccionario: {progress}%",
+  "@home_dict_downloading": {
+    "placeholders": {
+      "progress": { "type": "String" }
+    }
+  },
+  "home_dict_extracting": "Descomprimiendo archivos...",
+  "home_dict_loading": "Cargando diccionario en memoria...",
+  "home_dict_ready": "Diccionario listo",
+  "home_dict_error": "Error al inicializar el diccionario: {error}",
+  "@home_dict_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "home_loader_desc": "Esto es necesario solo en el primer inicio para configurar el diccionario de traducción offline (MDBG CC-CEDICT).",
+  "home_error_title": "¡Vaya! Hubo un problema",
+  "home_retry": "Reintentar",
+  "home_examples_section": "Ejemplos rápidos para probar",
+  "home_empty_input_error": "Por favor, ingresa o pega un texto en chino mandarín.",
+  "home_example_1_title": "Saludos Básicos",
+  "home_example_2_title": "Pasatiempos",
+  "home_example_3_title": "Poema Dinastía Tang",
+
+  "sectionLibrary": "========== LIBRARY SCREEN ==========",
+  "library_title": "Biblioteca",
+  "library_search_hint": "Buscar textos guardados...",
+  "library_empty_title": "Tu biblioteca está vacía",
+  "library_empty_subtitle": "Los textos que leas se guardarán aquí automáticamente para que puedas retomar la lectura cuando quieras.",
+  "library_no_results_title": "Sin resultados",
+  "library_no_results_subtitle": "No se encontraron textos que coincidan con tu búsqueda.",
+  "library_delete_confirm_title": "Eliminar texto",
+  "library_delete_confirm_message": "¿Estás seguro de que quieres eliminar \"{title}\"? Esta acción no se puede deshacer.",
+  "@library_delete_confirm_message": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "library_rename_title": "Renombrar texto",
+  "library_rename_hint": "Nuevo título...",
+
+  "sectionSettings": "========== SETTINGS SCREEN ==========",
+  "settings_title": "Configuración",
+  "settings_tts_section": "Motor de Voz (TTS)",
+  "settings_system_tts_title": "Google System TTS",
+  "settings_system_tts_desc": "Usa el motor nativo del celular. No consume datos y es 100% offline.",
+  "settings_edge_tts_title": "Microsoft Edge TTS",
+  "settings_edge_tts_desc": "Voces neuronales de ultra alta calidad en la nube. Requiere conexión activa.",
+  "settings_azure_tts_title": "Microsoft Azure Speech",
+  "settings_azure_tts_desc": "Servicio en la nube premium con soporte oficial y alta estabilidad.",
+  "settings_openai_tts_title": "OpenAI TTS",
+  "settings_openai_tts_desc": "Voces neuronales de OpenAI de gran expresividad.",
+  "settings_azure_api_key": "Clave API de Azure",
+  "settings_azure_region": "Región de Azure (ej. eastus)",
+  "settings_openai_api_key": "Clave API de OpenAI",
+  "settings_openai_voice": "Voz de OpenAI",
+  "settings_reading_lang_section": "Idioma de Lectura (Voz)",
+  "settings_synthesis_lang": "Idioma de síntesis",
+  "settings_synthesis_lang_sub": "Idioma o acento para leer el texto en chino",
+  "settings_lang_mandarin": "Chino Mandarín (zh-CN)",
+  "settings_lang_taiwan": "Mandarín de Taiwán (zh-TW)",
+  "settings_lang_cantonese": "Cantonés de Hong Kong (zh-HK)",
+  "settings_app_lang_section": "Idioma de la Aplicación",
+  "settings_app_lang_label": "Idioma de interfaz",
+  "settings_app_lang_sub": "Idioma del menú y traducciones de la app",
+  "settings_text_size_section": "Tamaño de Texto del Lector",
+  "settings_preview_label": "Vista previa:",
+  "settings_recommended_badge": "Recomendado",
+  "settings_tag_offline": "Offline",
+  "settings_tag_online": "Online",
+  "settings_tag_zero_mb": "0 MB",
+  "settings_tag_fast": "Rápido",
+  "settings_tag_ultra_quality": "Ultra Calidad",
+  "settings_tag_free": "Gratis",
+  "settings_tag_premium": "Premium",
+  "settings_tag_api_key": "Clave API",
+
+  "sectionReader": "========== READER SCREEN ==========",
+  "reader_title_fallback": "Lectura",
+  "reader_processing": "Procesando texto y pinyin...",
+  "reader_status_ready": "Listo",
+  "reader_status_playing": "Reproduciendo",
+  "reader_status_paused": "Pausado",
+  "reader_speed_label": "Velocidad: {speed}x",
+  "@reader_speed_label": {
+    "placeholders": {
+      "speed": { "type": "String" }
+    }
+  },
+
+  "sectionBottomSheet": "========== TRANSLATION BOTTOM SHEET ==========",
+  "sheet_definitions": "Definiciones",
+  "sheet_traditional": "Tradicional: {text}",
+  "@sheet_traditional": {
+    "placeholders": {
+      "text": { "type": "String" }
+    }
+  },
+  "sheet_no_translation": "No se encontró traducción en el diccionario local para esta palabra."
+}

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import '../../domain/entities/reading_entry.dart';
 import '../../domain/services/library_service.dart';
 import '../widgets/reading_entry_card.dart';
 import '../widgets/rename_dialog.dart';
 import 'package:yueting_reader/features/reader/presentation/screens/reading_screen.dart';
 
+// Pantalla de la biblioteca local que muestra la lista de lecturas guardadas en Hive
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
 
@@ -49,18 +51,19 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Future<void> _confirmDelete(ReadingEntry entry) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Eliminar texto', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.library_delete_confirm_title, style: const TextStyle(fontWeight: FontWeight.bold)),
         content: Text(
-          '¿Estás seguro de que quieres eliminar "${entry.displayTitle}"? Esta acción no se puede deshacer.',
+          l10n.library_delete_confirm_message(entry.displayTitle),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.black54)),
+            child: Text(l10n.common_cancel, style: const TextStyle(color: Colors.black54)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -69,7 +72,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Eliminar'),
+            child: Text(l10n.common_delete),
           ),
         ],
       ),
@@ -81,12 +84,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FB),
       appBar: AppBar(
-        title: const Text(
-          'Biblioteca',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        title: Text(
+          l10n.library_title,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         backgroundColor: Colors.white,
         elevation: 0.5,
@@ -101,7 +105,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               controller: _searchController,
               onChanged: (v) => setState(() => _searchQuery = v),
               decoration: InputDecoration(
-                hintText: 'Buscar textos guardados...',
+                hintText: l10n.library_search_hint,
                 prefixIcon: const Icon(Icons.search, color: Colors.deepPurple),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
@@ -185,6 +189,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     final isEmpty = _searchQuery.trim().isEmpty;
     return Center(
       child: Padding(
@@ -199,7 +204,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              isEmpty ? 'Tu biblioteca está vacía' : 'Sin resultados',
+              isEmpty ? l10n.library_empty_title : l10n.library_no_results_title,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -209,8 +214,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
             const SizedBox(height: 8),
             Text(
               isEmpty
-                  ? 'Los textos que leas se guardarán aquí automáticamente para que puedas retomar la lectura cuando quieras.'
-                  : 'No se encontraron textos que coincidan con tu búsqueda.',
+                  ? l10n.library_empty_subtitle
+                  : l10n.library_no_results_subtitle,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey.shade500, height: 1.4),
             ),

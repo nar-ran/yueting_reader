@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import '../../domain/entities/reading_entry.dart';
 
+// Dialogo modal para cambiar el titulo de un texto de la biblioteca
 class RenameDialog extends StatefulWidget {
   final ReadingEntry entry;
 
@@ -38,11 +40,12 @@ class _RenameDialogState extends State<RenameDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text(
-        'Renombrar texto',
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      title: Text(
+        l10n.library_rename_title,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
       content: TextField(
         controller: _controller,
@@ -50,7 +53,7 @@ class _RenameDialogState extends State<RenameDialog> {
         textCapitalization: TextCapitalization.sentences,
         onSubmitted: (_) => _submit(),
         decoration: InputDecoration(
-          hintText: 'Nuevo título...',
+          hintText: l10n.library_rename_hint,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -64,7 +67,7 @@ class _RenameDialogState extends State<RenameDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(null),
-          child: const Text('Cancelar', style: TextStyle(color: Colors.black54)),
+          child: Text(l10n.common_cancel, style: const TextStyle(color: Colors.black54)),
         ),
         ElevatedButton(
           onPressed: _submit,
@@ -73,7 +76,7 @@ class _RenameDialogState extends State<RenameDialog> {
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          child: const Text('Guardar'),
+          child: Text(l10n.common_save),
         ),
       ],
     );

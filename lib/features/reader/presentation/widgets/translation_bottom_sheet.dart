@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import '../../domain/entities/word_token.dart';
 
+// Modal inferior que muestra las traducciones y pinyin de la palabra seleccionada
 class TranslationBottomSheet extends StatelessWidget {
   final WordToken token;
 
@@ -13,6 +15,7 @@ class TranslationBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final entry = token.dictEntry;
     final hasDefinitions = entry != null && entry.definitions.isNotEmpty;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 24.0),
@@ -24,7 +27,7 @@ class TranslationBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Indicador de arrastre
+          // Indicador visual de arrastre
           Center(
             child: Container(
               width: 48,
@@ -64,11 +67,11 @@ class TranslationBottomSheet extends StatelessWidget {
             ],
           ),
           
-          // Forma tradicional si es diferente
+          // Forma tradicional si es diferente de la simplificada
           if (entry != null && entry.traditional != entry.simplified) ...[
             const SizedBox(height: 8.0),
             Text(
-              'Tradicional: ${entry.traditional}',
+              l10n.sheet_traditional(entry.traditional),
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade600,
@@ -80,9 +83,9 @@ class TranslationBottomSheet extends StatelessWidget {
           const Divider(height: 24.0, thickness: 1.0),
           
           // Titulo de definiciones
-          const Text(
-            'Definiciones',
-            style: TextStyle(
+          Text(
+            l10n.sheet_definitions,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.black54,
@@ -135,7 +138,7 @@ class TranslationBottomSheet extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
-                'No se encontró traducción en el diccionario local para esta palabra.',
+                l10n.sheet_no_translation,
                 style: TextStyle(
                   fontSize: 15,
                   fontStyle: FontStyle.italic,

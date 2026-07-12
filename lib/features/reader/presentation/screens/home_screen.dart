@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import '../../domain/services/dictionary_service.dart';
 import 'reading_screen.dart';
 import 'package:yueting_reader/features/library/domain/entities/reading_entry.dart';
@@ -7,6 +8,8 @@ import 'package:yueting_reader/features/library/domain/services/library_service.
 import 'package:yueting_reader/features/library/presentation/screens/library_screen.dart';
 import 'package:yueting_reader/features/settings/presentation/screens/settings_screen.dart';
 
+// Pantalla principal de la aplicacion que contiene el formulario de ingreso de texto,
+// los ejemplos rapidos, el boton de biblioteca, ajustes, e inicializa el diccionario
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,15 +24,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, String>> _examples = [
     {
-      'title': 'Saludos Básicos',
-      'text': '你好！欢迎使用阅听（YuèTīng）。\n这是一个开源 de 读听忆 (leer, escuchar y recordar) 工具。\n希望你喜欢学习中文！',
+      'titleKey': 'example_1',
+      'text': '你好！欢迎使用阅听（YuèTīng）。\n这是一个开源 de 读听忆 (leer, escuchar y recordar) 工具。\n希望你喜欢 learning Chinese!',
     },
     {
-      'title': 'Pasatiempos',
+      'titleKey': 'example_2',
       'text': '我喜欢听中文歌，也喜欢看中文电影。\n你最喜欢什么歌？我们一起学中文吧！',
     },
     {
-      'title': 'Poema Dinastía Tang',
+      'titleKey': 'example_3',
       'text': '静夜思 (Jìng yè sī)\n床前明月光，疑是地上霜。\n举头望明月，低头思故乡。',
     }
   ];
@@ -37,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Start dictionary initialization when home screen loads
+    // Inicia la inicializacion del diccionario al cargar la pantalla
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _dictService.init();
     });
@@ -50,9 +53,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // Obtiene el titulo localizado de cada ejemplo
+  String _getExampleTitle(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context)!;
+    if (key == 'example_1') return l10n.home_example_1_title;
+    if (key == 'example_2') return l10n.home_example_2_title;
+    return l10n.home_example_3_title;
+  }
+
   void _useExample(Map<String, String> example) {
     setState(() {
-      _titleController.text = example['title']!;
+      _titleController.text = _getExampleTitle(context, example['titleKey']!);
       _textController.text = example['text']!;
     });
   }
@@ -75,8 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final text = _textController.text.trim();
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, ingresa o pega un texto en chino mandarín.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.home_empty_input_error),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -85,13 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final title = _titleController.text.trim();
     
-    // Auto-save to library
+    // Guarda automaticamente en la biblioteca de textos
     final entry = await LibraryService().createEntry(
       title: title.isEmpty ? 'Lectura Nueva' : title,
       text: text,
     );
 
-    // Clear text inputs
+    // Limpia los campos de texto
     _titleController.clear();
     _textController.clear();
 
@@ -124,7 +135,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Traduce el estado de inicializacion del diccionario usando localizacion
+  String _getLoaderMessage(BuildContext context, DictLoadingState state) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (state.status) {
+      case DictLoadingStatus.downloading:
+        return l10n.home_dict_downloading((state.progress * 100).toStringAsFixed(1));
+      case DictLoadingStatus.extracting:
+        return l10n.home_dict_extracting;
+      case DictLoadingStatus.loading:
+        return l10n.home_dict_loading;
+      case DictLoadingStatus.ready:
+        return l10n.home_dict_ready;
+      case DictLoadingStatus.error:
+        return l10n.home_dict_error(state.message);
+      default:
+        return state.message;
+    }
+  }
+
   Widget _buildLoaderScreen(DictLoadingState state) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FB),
       body: SafeArea(
@@ -134,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Stylized App Logo
+              // Logo de la aplicacion estilizado
               Center(
                 child: Container(
                   width: 100,
@@ -144,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(24.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.deepPurple.withOpacity(0.3),
+                        color: Colors.deepPurple.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -165,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 48.0),
               
               Text(
-                state.message,
+                _getLoaderMessage(context, state),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 18,
@@ -175,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 24.0),
               
-              // Progress Bar
+              // Barra de progreso
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: LinearProgressIndicator(
@@ -187,10 +218,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16.0),
               
-              const Text(
-                'Esto es necesario solo en el primer inicio para configurar el diccionario de traducción offline (MDBG CC-CEDICT).',
+              Text(
+                l10n.home_loader_desc,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   color: Colors.black54,
                   height: 1.4,
@@ -204,6 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildErrorScreen(String message) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Center(
         child: Padding(
@@ -213,9 +245,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
               const SizedBox(height: 16.0),
-              const Text(
-                '¡Vaya! Hubo un problema',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                l10n.home_error_title,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8.0),
               Text(
@@ -227,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ElevatedButton.icon(
                 onPressed: () => _dictService.init(),
                 icon: const Icon(Icons.refresh),
-                label: const Text('Reintentar'),
+                label: Text(l10n.home_retry),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   foregroundColor: Colors.white,
@@ -245,12 +277,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMainContent() {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FB),
       appBar: AppBar(
-        title: const Text(
-          'YuèTīng 阅听',
-          style: TextStyle(
+        title: Text(
+          l10n.home_title,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
@@ -258,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.menu_book, color: Colors.deepPurple),
-            tooltip: 'Biblioteca',
+            tooltip: l10n.home_library_tooltip,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const LibraryScreen()),
@@ -267,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.black54),
-            tooltip: 'Configuración',
+            tooltip: l10n.home_settings_tooltip,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -286,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Welcome Card
+            // Tarjeta de bienvenida
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
@@ -298,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.deepPurple.withOpacity(0.2),
+                    color: Colors.deepPurple.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -307,9 +340,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Lector Universal de Chino',
-                    style: TextStyle(
+                  Text(
+                    l10n.home_title,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -317,10 +350,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6.0),
                   Text(
-                    'Pega cualquier texto en chino mandarín para leerlo con Pinyin alineado y traducción interactiva offline al instante.',
+                    l10n.home_subtitle,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       height: 1.3,
                     ),
                   ),
@@ -329,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24.0),
 
-            // Continue Reading Section
+            // Seccion de Continuar leyendo
             ValueListenableBuilder<Box<ReadingEntry>>(
               valueListenable: LibraryService().listenable,
               builder: (context, box, _) {
@@ -339,9 +372,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Continuar leyendo',
-                      style: TextStyle(
+                    Text(
+                      l10n.home_continue_reading,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.black54,
@@ -356,10 +389,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16.0),
-                          border: Border.all(color: Colors.deepPurple.withOpacity(0.1)),
+                          border: Border.all(color: Colors.deepPurple.withValues(alpha: 0.1)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.01),
+                              color: Colors.black.withValues(alpha: 0.01),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -371,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
+                                color: Colors.deepPurple.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
                               child: const Icon(
@@ -420,10 +453,10 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
-            // Form Title
-            const Text(
-              'Ingresar nuevo texto',
-              style: TextStyle(
+            // Formulario de ingreso de texto
+            Text(
+              l10n.home_input_section,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
@@ -431,7 +464,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 12.0),
 
-            // Text input Container
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
@@ -439,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.01),
+                    color: Colors.black.withValues(alpha: 0.01),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -447,11 +479,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Column(
                 children: [
-                  // Title textfield
+                  // Campo de texto del titulo
                   TextField(
                     controller: _titleController,
                     decoration: InputDecoration(
-                      hintText: 'Título del texto (opcional)',
+                      hintText: l10n.home_input_title_hint,
                       border: InputBorder.none,
                       hintStyle: TextStyle(color: Colors.grey.shade400),
                     ),
@@ -462,13 +494,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const Divider(height: 1.0),
                   const SizedBox(height: 8.0),
-                  // Chinese Text textfield
+                  // Campo de texto de caracteres chinos
                   TextField(
                     controller: _textController,
                     maxLines: 8,
                     minLines: 4,
                     decoration: InputDecoration(
-                      hintText: 'Pega aquí el texto en caracteres chinos (Hanzi)...',
+                      hintText: l10n.home_input_hint,
                       border: InputBorder.none,
                       hintStyle: TextStyle(color: Colors.grey.shade400),
                     ),
@@ -482,10 +514,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24.0),
 
-            // Quick Examples Section
-            const Text(
-              'Ejemplos rápidos para probar',
-              style: TextStyle(
+            // Seccion de Ejemplos rapidos
+            Text(
+              l10n.home_examples_section,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
@@ -493,7 +525,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 12.0),
             
-            // Grid of examples
+            // Fila de ejemplos
             Row(
               children: _examples.map((ex) {
                 return Expanded(
@@ -510,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           border: Border.all(color: Colors.grey.shade200),
                         ),
                         child: Text(
-                          ex['title']!,
+                          _getExampleTitle(context, ex['titleKey']!),
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -528,7 +560,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 32.0),
 
-            // Main Action Button
+            // Boton de accion principal
             ElevatedButton(
               onPressed: _navigateToReader,
               style: ElevatedButton.styleFrom(
@@ -540,14 +572,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 elevation: 2.0,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.chrome_reader_mode_outlined),
-                  SizedBox(width: 10),
+                  const Icon(Icons.chrome_reader_mode_outlined),
+                  const SizedBox(width: 10),
                   Text(
-                    'Comenzar Lectura',
-                    style: TextStyle(
+                    l10n.home_start_reading,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

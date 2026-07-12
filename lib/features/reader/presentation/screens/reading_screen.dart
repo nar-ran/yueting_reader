@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import '../../domain/entities/word_token.dart';
 import '../../domain/services/segmenter_service.dart';
 import '../../domain/services/tts/tts_engine.dart';
@@ -273,6 +274,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   // Barra flotante inferior de control de reproduccion de audio
   Widget _buildPlayerBar() {
     if (_isSegmenting) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context)!;
     
     return Container(
       decoration: BoxDecoration(
@@ -339,7 +341,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 const Icon(Icons.speed_rounded, size: 18, color: Colors.black54),
                 const SizedBox(width: 8),
                 Text(
-                  'Velocidad: ${_speechRate.toStringAsFixed(1)}x',
+                  l10n.reader_speed_label(_speechRate.toStringAsFixed(1)),
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87),
                 ),
                 Expanded(
@@ -363,11 +365,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   // Construye la etiqueta de estado de reproduccion
   Widget _buildStatusText() {
-    String status = 'Listo';
+    final l10n = AppLocalizations.of(context)!;
+    String status = l10n.reader_status_ready;
     if (_ttsState == TtsState.playing) {
-      status = 'Reproduciendo';
+      status = l10n.reader_status_playing;
     } else if (_ttsState == TtsState.paused) {
-      status = 'Pausado';
+      status = l10n.reader_status_paused;
     }
     
     return Container(
@@ -393,11 +396,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FB), // Fondo premium gris suave
       appBar: AppBar(
         title: Text(
-          widget.title.isNotEmpty ? widget.title : 'Lectura',
+          widget.title.isNotEmpty ? widget.title : l10n.reader_title_fallback,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -408,17 +412,17 @@ class _ReadingScreenState extends State<ReadingScreen> {
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: _isSegmenting
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(
+                  const CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   Text(
-                    'Procesando texto y pinyin...',
-                    style: TextStyle(
+                    l10n.reader_processing,
+                    style: const TextStyle(
                       fontSize: 15,
                       color: Colors.black54,
                       fontWeight: FontWeight.w500,
