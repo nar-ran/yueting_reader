@@ -14,6 +14,9 @@ void main() async {
   // Inicializar LibraryService
   await LibraryService().init();
   
+  // Abrir la caja de configuracion de la aplicacion
+  await Hive.openBox('settings');
+  
   runApp(const YuetingApp());
 }
 

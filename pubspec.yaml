@@ -32,6 +32,7 @@ dependencies:
   # Audio y Reproducción
   audioplayers: ^6.0.0
   flutter_tts: ^4.0.2
+  edge_tts: ^0.1.5
 
   # Conexión HTTP
   http: ^1.2.1

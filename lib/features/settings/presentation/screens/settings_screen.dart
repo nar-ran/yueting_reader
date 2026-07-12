@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 // Pantalla de ajustes de la aplicacion para configurar motores de voz, idioma y aspecto visual
 class SettingsScreen extends StatefulWidget {
@@ -9,11 +10,61 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  // Opciones locales simuladas para el diseño visual
-  String _selectedEngine = 'system'; // system, edge, piper
-  String _voiceLanguage = 'zh-CN'; // zh-CN, zh-TW, zh-HK
-  String _appLanguage = 'es'; // es, en
-  double _fontSizeMultiplier = 1.0; // 0.8 a 1.4
+  late Box _settingsBox;
+  
+  String _selectedEngine = 'system';
+  String _voiceLanguage = 'zh-CN';
+  String _appLanguage = 'es';
+  double _fontSizeMultiplier = 1.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _settingsBox = Hive.box('settings');
+    
+    // Carga las configuraciones guardadas en Hive o inicializa con los valores por defecto
+    _selectedEngine = _settingsBox.get('selected_engine', defaultValue: 'system') as String;
+    if (_selectedEngine == 'piper') {
+      _selectedEngine = 'system';
+      _settingsBox.put('selected_engine', 'system');
+    }
+    
+    _voiceLanguage = _settingsBox.get('voice_language', defaultValue: 'zh-CN') as String;
+    _appLanguage = _settingsBox.get('app_language', defaultValue: 'es') as String;
+    _fontSizeMultiplier = _settingsBox.get('font_size_multiplier', defaultValue: 1.0) as double;
+  }
+
+  // Guarda y actualiza la seleccion del motor de voz
+  void _updateEngine(String engineId) {
+    setState(() {
+      _selectedEngine = engineId;
+    });
+    _settingsBox.put('selected_engine', engineId);
+  }
+
+  // Guarda y actualiza el idioma de voz
+  void _updateVoiceLanguage(String langCode) {
+    setState(() {
+      _voiceLanguage = langCode;
+    });
+    _settingsBox.put('voice_language', langCode);
+  }
+
+  // Guarda y actualiza el idioma de la app
+  void _updateAppLanguage(String langCode) {
+    setState(() {
+      _appLanguage = langCode;
+    });
+    _settingsBox.put('app_language', langCode);
+  }
+
+  // Guarda y actualiza el multiplicador del tamaño de texto
+  void _updateFontSize(double value) {
+    setState(() {
+      _fontSizeMultiplier = value;
+    });
+    _settingsBox.put('font_size_multiplier', value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +100,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             tags: ['Online', 'Ultra Calidad', 'Gratis'],
             isRecommended: true,
           ),
-          const SizedBox(height: 12),
-          _buildEngineCard(
-            id: 'piper',
-            title: 'Piper TTS ONNX',
-            description: 'Modelos neuronales locales de alta calidad. Requiere descargar voz de 15-50MB.',
-            tags: ['Offline', 'Alta Calidad', 'Descarga'],
-            isRecommended: false,
-          ),
           const SizedBox(height: 24),
           _buildSectionTitle('Idioma de Lectura (Voz)'),
           const SizedBox(height: 12),
@@ -71,7 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
             onChanged: (val) {
               if (val != null) {
-                setState(() => _voiceLanguage = val);
+                _updateVoiceLanguage(val);
               }
             },
           ),
@@ -88,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
             onChanged: (val) {
               if (val != null) {
-                setState(() => _appLanguage = val);
+                _updateAppLanguage(val);
               }
             },
           ),
@@ -125,11 +168,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     final isSelected = _selectedEngine == id;
     return InkWell(
-      onTap: () {
-        setState(() {
-          _selectedEngine = id;
-        });
-      },
+      onTap: () => _updateEngine(id),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -190,7 +229,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   activeColor: Colors.deepPurple,
                   onChanged: (val) {
                     if (val != null) {
-                      setState(() => _selectedEngine = val);
+                      _updateEngine(val);
                     }
                   },
                 ),
@@ -318,9 +357,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   activeColor: Colors.deepPurple,
                   inactiveColor: Colors.deepPurple.withValues(alpha: 0.2),
                   onChanged: (val) {
-                    setState(() {
-                      _fontSizeMultiplier = val;
-                    });
+                    _updateFontSize(val);
                   },
                 ),
               ),
