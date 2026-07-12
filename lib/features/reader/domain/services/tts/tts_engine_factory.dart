@@ -2,6 +2,8 @@ import 'package:hive/hive.dart';
 import 'tts_engine.dart';
 import 'system_tts_engine.dart';
 import 'edge_tts_engine.dart';
+import 'azure_tts_engine.dart';
+import 'openai_tts_engine.dart';
 
 // Fabrica para instanciar el motor de voz configurado en los ajustes de Hive
 class TtsEngineFactory {
@@ -12,6 +14,10 @@ class TtsEngineFactory {
     switch (selectedEngine) {
       case 'edge':
         return EdgeTtsEngine();
+      case 'azure':
+        return AzureTtsEngine();
+      case 'openai':
+        return OpenAiTtsEngine();
       case 'system':
       default:
         return SystemTtsEngine();

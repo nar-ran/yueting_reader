@@ -17,6 +17,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _appLanguage = 'es';
   double _fontSizeMultiplier = 1.0;
 
+  // Controladores y estados para los motores premium
+  late TextEditingController _azureKeyController;
+  late TextEditingController _azureRegionController;
+  late TextEditingController _openaiKeyController;
+  
+  bool _obscureAzureKey = true;
+  bool _obscureOpenaiKey = true;
+  
+  String _openaiVoice = 'alloy';
+  bool _isTtsExpanded = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +43,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _voiceLanguage = _settingsBox.get('voice_language', defaultValue: 'zh-CN') as String;
     _appLanguage = _settingsBox.get('app_language', defaultValue: 'es') as String;
     _fontSizeMultiplier = _settingsBox.get('font_size_multiplier', defaultValue: 1.0) as double;
+
+    // Inicializa controladores para claves de API
+    _azureKeyController = TextEditingController(
+      text: _settingsBox.get('azure_api_key', defaultValue: '') as String,
+    );
+    _azureRegionController = TextEditingController(
+      text: _settingsBox.get('azure_region', defaultValue: 'eastus') as String,
+    );
+    _openaiKeyController = TextEditingController(
+      text: _settingsBox.get('openai_api_key', defaultValue: '') as String,
+    );
+    _openaiVoice = _settingsBox.get('openai_voice', defaultValue: 'alloy') as String;
+  }
+
+  @override
+  void dispose() {
+    _azureKeyController.dispose();
+    _azureRegionController.dispose();
+    _openaiKeyController.dispose();
+    super.dispose();
   }
 
   // Guarda y actualiza la seleccion del motor de voz
@@ -83,23 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(20.0),
         children: [
-          _buildSectionTitle('Motor de Voz (TTS)'),
-          const SizedBox(height: 12),
-          _buildEngineCard(
-            id: 'system',
-            title: 'Google System TTS',
-            description: 'Usa el motor nativo del celular. No consume datos y es 100% offline.',
-            tags: ['Offline', '0 MB', 'Rápido'],
-            isRecommended: false,
-          ),
-          const SizedBox(height: 12),
-          _buildEngineCard(
-            id: 'edge',
-            title: 'Microsoft Edge TTS',
-            description: 'Voces neuronales de ultra alta calidad en la nube. Requiere conexión activa.',
-            tags: ['Online', 'Ultra Calidad', 'Gratis'],
-            isRecommended: true,
-          ),
+          _buildTtsAccordion(),
           const SizedBox(height: 24),
           _buildSectionTitle('Idioma de Lectura (Voz)'),
           const SizedBox(height: 12),
@@ -158,6 +173,108 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  // Construye la seccion de seleccion de motor de voz tipo acordeon
+  Widget _buildTtsAccordion() {
+    String engineTitle = 'Google System TTS';
+    if (_selectedEngine == 'edge') engineTitle = 'Microsoft Edge TTS';
+    if (_selectedEngine == 'azure') engineTitle = 'Microsoft Azure Speech';
+    if (_selectedEngine == 'openai') engineTitle = 'OpenAI TTS';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        children: [
+          // Fila del encabezado que actua como boton para expandir o contraer
+          ListTile(
+            title: const Text(
+              'Motor de Voz (TTS)',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black54),
+            ),
+            subtitle: Text(
+              engineTitle,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+            ),
+            trailing: Icon(
+              _isTtsExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+              color: Colors.deepPurple,
+            ),
+            onTap: () {
+              setState(() {
+                _isTtsExpanded = !_isTtsExpanded;
+              });
+            },
+          ),
+          
+          // Contenido colapsable con animacion de transicion suave
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+              child: Column(
+                children: [
+                  const Divider(height: 16),
+                  
+                  // Tarjeta Google System TTS
+                  _buildEngineCard(
+                    id: 'system',
+                    title: 'Google System TTS',
+                    description: 'Usa el motor nativo del celular. No consume datos y es 100% offline.',
+                    tags: ['Offline', '0 MB', 'Rápido'],
+                    isRecommended: false,
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Tarjeta Microsoft Edge TTS
+                  _buildEngineCard(
+                    id: 'edge',
+                    title: 'Microsoft Edge TTS',
+                    description: 'Voces neuronales de ultra alta calidad en la nube. Requiere conexión activa.',
+                    tags: ['Online', 'Ultra Calidad', 'Gratis'],
+                    isRecommended: true,
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Tarjeta Microsoft Azure Speech
+                  _buildEngineCard(
+                    id: 'azure',
+                    title: 'Microsoft Azure Speech',
+                    description: 'Servicio en la nube premium con soporte oficial y alta estabilidad.',
+                    tags: ['Online', 'Premium', 'Clave API'],
+                    isRecommended: false,
+                  ),
+                  if (_selectedEngine == 'azure') ...[
+                    const SizedBox(height: 12),
+                    _buildAzureInputs(),
+                  ],
+                  const SizedBox(height: 12),
+                  
+                  // Tarjeta OpenAI TTS
+                  _buildEngineCard(
+                    id: 'openai',
+                    title: 'OpenAI TTS',
+                    description: 'Voces neuronales de OpenAI de gran expresividad.',
+                    tags: ['Online', 'Premium', 'Clave API'],
+                    isRecommended: false,
+                  ),
+                  if (_selectedEngine == 'openai') ...[
+                    const SizedBox(height: 12),
+                    _buildOpenAiInputs(),
+                  ],
+                ],
+              ),
+            ),
+            crossFadeState: _isTtsExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 250),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Tarjeta interactiva para la seleccion de motor de voz
   Widget _buildEngineCard({
     required String id,
@@ -191,37 +308,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    if (isRecommended) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
+                Expanded(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
-                        child: const Text(
-                          'Recomendado',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                      ),
+                      if (isRecommended)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'Recomendado',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
                           ),
                         ),
-                      ),
                     ],
-                  ],
+                  ),
                 ),
                 Radio<String>(
                   value: id,
@@ -269,6 +388,104 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Campos de texto para la configuracion de Microsoft Azure Speech
+  Widget _buildAzureInputs() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          TextField(
+            controller: _azureKeyController,
+            obscureText: _obscureAzureKey,
+            onChanged: (val) => _settingsBox.put('azure_api_key', val.trim()),
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              labelText: 'Clave API de Azure',
+              isDense: true,
+              suffixIcon: IconButton(
+                icon: Icon(_obscureAzureKey ? Icons.visibility : Icons.visibility_off, size: 18),
+                onPressed: () => setState(() => _obscureAzureKey = !_obscureAzureKey),
+              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _azureRegionController,
+            onChanged: (val) => _settingsBox.put('azure_region', val.trim()),
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              labelText: 'Región de Azure (ej. eastus)',
+              isDense: true,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Campos de texto para la configuracion de OpenAI TTS
+  Widget _buildOpenAiInputs() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _openaiKeyController,
+            obscureText: _obscureOpenaiKey,
+            onChanged: (val) => _settingsBox.put('openai_api_key', val.trim()),
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              labelText: 'Clave API de OpenAI',
+              isDense: true,
+              suffixIcon: IconButton(
+                icon: Icon(_obscureOpenaiKey ? Icons.visibility : Icons.visibility_off, size: 18),
+                onPressed: () => setState(() => _obscureOpenaiKey = !_obscureOpenaiKey),
+              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Voz de OpenAI', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              DropdownButton<String>(
+                value: _openaiVoice,
+                underline: const SizedBox.shrink(),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                items: const [
+                  DropdownMenuItem(value: 'alloy', child: Text('Alloy')),
+                  DropdownMenuItem(value: 'echo', child: Text('Echo')),
+                  DropdownMenuItem(value: 'fable', child: Text('Fable')),
+                  DropdownMenuItem(value: 'onyx', child: Text('Onyx')),
+                  DropdownMenuItem(value: 'nova', child: Text('Nova')),
+                  DropdownMenuItem(value: 'shimmer', child: Text('Shimmer')),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() => _openaiVoice = val);
+                    _settingsBox.put('openai_voice', val);
+                  }
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
