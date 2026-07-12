@@ -5,6 +5,7 @@ import 'reading_screen.dart';
 import 'package:yueting_reader/features/library/domain/entities/reading_entry.dart';
 import 'package:yueting_reader/features/library/domain/services/library_service.dart';
 import 'package:yueting_reader/features/library/presentation/screens/library_screen.dart';
+import 'package:yueting_reader/features/settings/presentation/screens/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -261,6 +262,15 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const LibraryScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: Colors.black54),
+            tooltip: 'Configuración',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
               );
             },
           ),
