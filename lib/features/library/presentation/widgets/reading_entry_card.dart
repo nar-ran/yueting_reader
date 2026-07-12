@@ -46,7 +46,7 @@ class ReadingEntryCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Left: Purple dot/icon
+            // Izquierda: icono o indicador morado
             Container(
               width: 44,
               height: 44,
@@ -60,7 +60,7 @@ class ReadingEntryCard extends StatelessWidget {
             ),
             const SizedBox(width: 14),
 
-            // Middle: title + preview + date
+            // Centro: titulo, vista previa y fecha
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +99,7 @@ class ReadingEntryCard extends StatelessWidget {
               ),
             ),
 
-            // Right: options menu
+            // Derecha: menu de opciones
             PopupMenuButton<String>(
               icon: Icon(Icons.more_vert, color: Colors.grey.shade400),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

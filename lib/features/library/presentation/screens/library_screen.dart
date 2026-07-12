@@ -94,7 +94,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
       body: Column(
         children: [
-          // Search bar
+          // Barra de busqueda
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: TextField(
@@ -131,7 +131,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
           ),
 
-          // Reactive list from Hive
+          // Lista reactiva desde Hive
           Expanded(
             child: ValueListenableBuilder<Box<ReadingEntry>>(
               valueListenable: _libraryService.listenable,
@@ -156,7 +156,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       direction: DismissDirection.endToStart,
                       confirmDismiss: (_) async {
                         await _confirmDelete(entry);
-                        return false; // We handle deletion manually
+                        return false; // Manejamos la eliminacion de forma manual
                       },
                       background: Container(
                         alignment: Alignment.centerRight,

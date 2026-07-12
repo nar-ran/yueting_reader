@@ -11,12 +11,12 @@ class CedictEntry {
     required this.definitions,
   });
 
-  /// Parses a single line from the CC-CEDICT file.
-  /// Returns null if the line is a comment or invalid.
+  // Parsea una sola linea del archivo CC-CEDICT
+  // Devuelve null si la linea es un comentario o es invalida
   static CedictEntry? parseLine(String line) {
     if (line.isEmpty || line.startsWith('#')) return null;
 
-    // Format: Traditional Simplified [pinyin] /defn1/defn2/.../
+    // Formato: Traditional Simplified [pinyin] /defn1/defn2/.../
     final bracketStart = line.indexOf('[');
     final bracketEnd = line.indexOf(']');
     if (bracketStart == -1 || bracketEnd == -1) return null;
@@ -33,7 +33,7 @@ class CedictEntry {
     final slashPart = line.substring(bracketEnd + 1).trim();
     if (!slashPart.startsWith('/') || !slashPart.endsWith('/')) return null;
 
-    // Remove leading and trailing slashes, then split by slash
+    // Elimina las barras inicial y final, y luego separa por barras
     final definitionsRaw = slashPart.substring(1, slashPart.length - 1).split('/');
     final definitions = definitionsRaw.map((d) => d.trim()).where((d) => d.isNotEmpty).toList();
 

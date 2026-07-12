@@ -17,7 +17,7 @@ enum DictLoadingStatus {
 
 class DictLoadingState {
   final DictLoadingStatus status;
-  final double progress; // 0.0 to 1.0
+  final double progress; // 0.0 a 1.0
   final String message;
 
   DictLoadingState({
@@ -46,22 +46,22 @@ class DictionaryService {
 
   bool get isReady => _isLoaded;
 
-  /// Devuelve el mapa del diccionario en memoria.
+  // Devuelve el mapa del diccionario en memoria
   Map<String, List<CedictEntry>> get dictionary => _dictionary;
 
-  /// Obtiene la ruta local del archivo de texto del diccionario.
+  // Obtiene la ruta local del archivo de texto del diccionario
   Future<File> get _localDictFile async {
     final directory = await getApplicationSupportDirectory();
     return File('${directory.path}/cedict_1_0_ts_utf-8_mdbg.txt');
   }
 
-  /// Verifica si el archivo del diccionario existe localmente.
+  // Verifica si el archivo del diccionario existe localmente
   Future<bool> checkDictionaryExists() async {
     final file = await _localDictFile;
     return await file.exists();
   }
 
-  /// Descarga y extrae el archivo CC-CEDICT si no esta presente.
+  // Descarga y extrae el archivo CC-CEDICT si no esta presente
   Future<void> init() async {
     if (_isLoaded) return;
 
@@ -82,7 +82,7 @@ class DictionaryService {
     }
   }
 
-  /// Descarga el zip de CC-CEDICT y extrae el archivo de texto.
+  // Descarga el zip de CC-CEDICT y extrae el archivo de texto
   Future<void> downloadAndExtract() async {
     loadingState.value = DictLoadingState(
       status: DictLoadingStatus.downloading,
@@ -155,7 +155,7 @@ class DictionaryService {
     );
   }
 
-  /// Carga CC-CEDICT desde el archivo local en el mapa de memoria
+  // Carga CC-CEDICT desde el archivo local en el mapa de memoria
   Future<void> loadDictionary() async {
     loadingState.value = DictLoadingState(
       status: DictLoadingStatus.loading,
@@ -195,7 +195,7 @@ class DictionaryService {
     );
   }
 
-  /// Busca definiciones para una palabra simplificada
+  // Busca definiciones para una palabra simplificada
   List<CedictEntry>? lookup(String word) {
     if (!_isLoaded) return null;
     return _dictionary[word];

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../entities/reading_entry.dart';
 
-/// Servicio encargado de gestionar el almacenamiento local de las lecturas
+// Servicio encargado de gestionar el almacenamiento local de las lecturas
 class LibraryService {
   static final LibraryService _instance = LibraryService._internal();
   factory LibraryService() => _instance;
@@ -15,7 +15,7 @@ class LibraryService {
 
   bool get isInitialized => _isInitialized;
 
-  /// Inicializa la caja de almacenamiento Hive. Debe llamarse antes de cualquier otra operacion
+  // Inicializa la caja de almacenamiento Hive. Debe llamarse antes de cualquier otra operacion
   Future<void> init() async {
     if (_isInitialized) return;
     _box = await Hive.openBox<ReadingEntry>(_boxName);
@@ -29,25 +29,25 @@ class LibraryService {
     return _box!;
   }
 
-  /// Devuelve todas las entradas guardadas, ordenadas por la fecha de ultima apertura (mas reciente primero)
+  // Devuelve todas las entradas guardadas, ordenadas por la fecha de ultima apertura (mas reciente primero)
   List<ReadingEntry> getAllEntries() {
     final entries = _safeBox.values.toList();
     entries.sort((a, b) => b.dateLastOpened.compareTo(a.dateLastOpened));
     return entries;
   }
 
-  /// Devuelve la lectura abierta mas recientemente, o null si la biblioteca esta vacia
+  // Devuelve la lectura abierta mas recientemente, o null si la biblioteca esta vacia
   ReadingEntry? getLastOpened() {
     final entries = getAllEntries();
     return entries.isEmpty ? null : entries.first;
   }
 
-  /// Guarda una nueva entrada o actualiza una existente en base a su ID
+  // Guarda una nueva entrada o actualiza una existente en base a su ID
   Future<void> saveEntry(ReadingEntry entry) async {
     await _safeBox.put(entry.id, entry);
   }
 
-  /// Crea y almacena una nueva entrada a partir de un titulo y texto
+  // Crea y almacena una nueva entrada a partir de un titulo y texto
   Future<ReadingEntry> createEntry({
     required String title,
     required String text,
@@ -65,7 +65,7 @@ class LibraryService {
     return entry;
   }
 
-  /// Actualiza la fecha de ultima apertura de un texto a la hora actual
+  // Actualiza la fecha de ultima apertura de un texto a la hora actual
   Future<void> touchEntry(String id) async {
     final entry = _safeBox.get(id);
     if (entry == null) return;
@@ -73,7 +73,7 @@ class LibraryService {
     await _safeBox.put(id, updated);
   }
 
-  /// Cambia el titulo de una lectura existente
+  // Cambia el titulo de una lectura existente
   Future<void> renameEntry(String id, String newTitle) async {
     final entry = _safeBox.get(id);
     if (entry == null) return;
@@ -81,12 +81,12 @@ class LibraryService {
     await _safeBox.put(id, updated);
   }
 
-  /// Elimina una lectura en base a su ID
+  // Elimina una lectura en base a su ID
   Future<void> deleteEntry(String id) async {
     await _safeBox.delete(id);
   }
 
-  /// Busca lecturas que contengan la consulta en el titulo o el texto (no sensible a mayusculas/minusculas)
+  // Busca lecturas que contengan la consulta en el titulo o el texto (no sensible a mayusculas/minusculas)
   List<ReadingEntry> search(String query) {
     if (query.trim().isEmpty) return getAllEntries();
     final lower = query.toLowerCase();
@@ -97,7 +97,7 @@ class LibraryService {
         .toList();
   }
 
-  /// Devuelve un escuchador de eventos de la caja Hive para actualizar la UI reactivamente
+  // Devuelve un escuchador de eventos de la caja Hive para actualizar la UI reactivamente
   ValueListenable<Box<ReadingEntry>> get listenable {
     return _safeBox.listenable();
   }

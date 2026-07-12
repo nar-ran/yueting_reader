@@ -24,7 +24,7 @@ class TranslationBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Drag handle
+          // Indicador de arrastre
           Center(
             child: Container(
               width: 48,
@@ -37,7 +37,7 @@ class TranslationBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20.0),
           
-          // Word & Pinyin Row
+          // Fila de palabra y pinyin
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
@@ -64,7 +64,7 @@ class TranslationBottomSheet extends StatelessWidget {
             ],
           ),
           
-          // Traditional form if different
+          // Forma tradicional si es diferente
           if (entry != null && entry.traditional != entry.simplified) ...[
             const SizedBox(height: 8.0),
             Text(
@@ -79,7 +79,7 @@ class TranslationBottomSheet extends StatelessWidget {
           
           const Divider(height: 24.0, thickness: 1.0),
           
-          // Definitions title
+          // Titulo de definiciones
           const Text(
             'Definiciones',
             style: TextStyle(
@@ -91,7 +91,7 @@ class TranslationBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 8.0),
 
-          // Definitions list
+          // Lista de definiciones
           if (hasDefinitions)
             Flexible(
               child: SingleChildScrollView(

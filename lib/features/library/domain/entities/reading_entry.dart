@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'reading_entry.g.dart';
 
-/// Representa un texto guardado en la biblioteca local del usuario.
+// Representa un texto guardado en la biblioteca local del usuario
 @HiveType(typeId: 0)
 class ReadingEntry extends HiveObject {
   @HiveField(0)
@@ -28,14 +28,14 @@ class ReadingEntry extends HiveObject {
     required this.dateLastOpened,
   });
 
-  /// Devuelve una vista previa del texto limitada a 100 caracteres.
+  // Devuelve una vista previa del texto limitada a 100 caracteres
   String get preview {
     final clean = text.trim();
     if (clean.length <= 100) return clean;
     return '${clean.substring(0, 100)}…';
   }
 
-  /// Devuelve el titulo ingresado o la primera linea del texto como alternativa.
+  // Devuelve el titulo ingresado o la primera linea del texto como alternativa
   String get displayTitle {
     if (title.isNotEmpty) return title;
     final firstLine = text.trim().split('\n').first.trim();
