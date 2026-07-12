@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
     
     // Guarda automaticamente en la biblioteca de textos
     final entry = await LibraryService().createEntry(
-      title: title.isEmpty ? 'Lectura Nueva' : title,
+      title: title.isEmpty ? AppLocalizations.of(context)!.home_new_reading : title,
       text: text,
     );
 

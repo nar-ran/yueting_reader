@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:hive/hive.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import 'tts_engine.dart';
 
 // Implementacion del motor TTS usando la sintesis de voz nativa del dispositivo
@@ -14,16 +16,20 @@ class SystemTtsEngine implements TtsEngine {
   Future<void> init(String languageCode) async {
     _langCode = languageCode;
     
+    // Carga las traducciones oficiales de la app basadas en el idioma activo
+    final String lang = Hive.box('settings').get('app_language', defaultValue: 'es') as String;
+    final l10n = lookupAppLocalizations(Locale(lang));
+    
     // Traduce codigos de error del sistema
     _flutterTts.setErrorHandler((msg) {
       if (_onError != null) {
         String friendlyMsg = msg;
         if (msg.contains('-4') || msg.contains('-5')) {
-          friendlyMsg = 'El acento seleccionado no está descargado en tu celular. Abre los ajustes de Texto a Voz de Android e instala el paquete de voz correspondiente (Hong Kong o Taiwán)';
+          friendlyMsg = l10n.tts_error_accent_not_downloaded;
         } else if (msg.contains('-3')) {
-          friendlyMsg = 'Error en la salida de audio del celular. Verifica el volumen de tu dispositivo';
+          friendlyMsg = l10n.tts_error_audio_output;
         }
-        _onError!('Error en motor nativo: $friendlyMsg');
+        _onError!(l10n.tts_error_native_engine(friendlyMsg));
       }
     });
 
@@ -39,13 +45,13 @@ class SystemTtsEngine implements TtsEngine {
       
       if (!supported) {
         if (_onError != null) {
-          _onError!('El idioma/acento ($languageCode) no está instalado o no es compatible con el motor nativo de tu celular');
+          _onError!(l10n.tts_error_language_not_installed(languageCode));
         }
       }
       await _flutterTts.setLanguage(languageCode);
     } catch (e) {
       if (_onError != null) {
-        _onError!('No se pudo validar el idioma en tu dispositivo: $e');
+        _onError!(l10n.tts_error_validate_language(e.toString()));
       }
     }
     

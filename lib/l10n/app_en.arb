@@ -44,6 +44,7 @@
   "home_example_1_title": "Basic Greetings",
   "home_example_2_title": "Hobbies",
   "home_example_3_title": "Tang Dynasty Poem",
+  "home_new_reading": "New Reading",
 
   "sectionLibrary": "========== LIBRARY SCREEN ==========",
   "library_title": "Library",
@@ -61,6 +62,14 @@
   },
   "library_rename_title": "Rename text",
   "library_rename_hint": "New title...",
+  "library_date_today": "Today",
+  "library_date_yesterday": "Yesterday",
+  "library_date_days_ago": "{count} days ago",
+  "@library_date_days_ago": {
+    "placeholders": {
+      "count": { "type": "String" }
+    }
+  },
 
   "sectionSettings": "========== SETTINGS SCREEN ==========",
   "settings_title": "Settings",
@@ -119,5 +128,43 @@
       "text": { "type": "String" }
     }
   },
-  "sheet_no_translation": "No translation found in local dictionary for this word."
+  "sheet_no_translation": "No translation found in local dictionary for this word.",
+  "sheet_translate_button": "Translate",
+  "sheet_translation_error": "Could not translate. Verify your Internet connection",
+
+  "sectionErrors": "========== TTS ENGINE ERRORS ==========",
+  "tts_error_accent_not_downloaded": "The selected accent is not downloaded on your phone. Open Android Text-to-Speech settings and install the corresponding voice pack (Hong Kong or Taiwan)",
+  "tts_error_audio_output": "Error in phone audio output. Verify your device volume",
+  "tts_error_native_engine": "System engine error: {message}",
+  "@tts_error_native_engine": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tts_error_language_not_installed": "The language/accent ({lang}) is not installed or is not supported by your phone's native engine",
+  "@tts_error_language_not_installed": {
+    "placeholders": {
+      "lang": { "type": "String" }
+    }
+  },
+  "tts_error_validate_language": "Could not validate language on your device: {error}",
+  "@tts_error_validate_language": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "tts_error_no_audio": "No audio data received from the server",
+  "tts_error_network": "Network error. Verify your internet connection to use this engine",
+  "tts_error_connection": "Connection or synthesis error: {error}",
+  "@tts_error_connection": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "tts_error_azure_api_key_empty": "Please enter your Azure API Key in Settings",
+  "tts_error_azure_api_key_invalid": "Invalid or expired Azure API Key. Verify your Settings",
+  "tts_error_azure_access_denied": "Access denied to Azure. Verify your region and subscription in Settings",
+  "tts_error_openai_api_key_empty": "Please enter your OpenAI API Key in Settings",
+  "tts_error_openai_api_key_invalid": "Invalid OpenAI API Key. Verify your Settings",
+  "tts_error_openai_quota": "OpenAI request limit exceeded or insufficient balance"
 }

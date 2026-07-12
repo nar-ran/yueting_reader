@@ -30,6 +30,8 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
       _isTranslating = true;
     });
 
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final List<String> translated = [];
       for (final def in entry.definitions) {
@@ -65,8 +67,8 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
           _isTranslating = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo traducir. Verifica tu conexión a Internet'),
+          SnackBar(
+            content: Text(l10n.sheet_translation_error),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -183,9 +185,9 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     icon: const Icon(Icons.g_translate_rounded, size: 14, color: Colors.deepPurple),
-                    label: const Text(
-                      'Traducir',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    label: Text(
+                      l10n.sheet_translate_button,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.deepPurple),
                     ),
                     onPressed: _translateDefinitions,
                   ),

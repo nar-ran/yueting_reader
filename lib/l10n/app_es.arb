@@ -44,6 +44,7 @@
   "home_example_1_title": "Saludos Básicos",
   "home_example_2_title": "Pasatiempos",
   "home_example_3_title": "Poema Dinastía Tang",
+  "home_new_reading": "Lectura Nueva",
 
   "sectionLibrary": "========== LIBRARY SCREEN ==========",
   "library_title": "Biblioteca",
@@ -61,6 +62,14 @@
   },
   "library_rename_title": "Renombrar texto",
   "library_rename_hint": "Nuevo título...",
+  "library_date_today": "Hoy",
+  "library_date_yesterday": "Ayer",
+  "library_date_days_ago": "Hace {count} días",
+  "@library_date_days_ago": {
+    "placeholders": {
+      "count": { "type": "String" }
+    }
+  },
 
   "sectionSettings": "========== SETTINGS SCREEN ==========",
   "settings_title": "Configuración",
@@ -119,5 +128,43 @@
       "text": { "type": "String" }
     }
   },
-  "sheet_no_translation": "No se encontró traducción en el diccionario local para esta palabra."
+  "sheet_no_translation": "No se encontró traducción en el diccionario local para esta palabra.",
+  "sheet_translate_button": "Traducir",
+  "sheet_translation_error": "No se pudo traducir. Verifica tu conexión a Internet",
+
+  "sectionErrors": "========== TTS ENGINE ERRORS ==========",
+  "tts_error_accent_not_downloaded": "El acento seleccionado no está descargado en tu celular. Abre los ajustes de Texto a Voz de Android e instala el paquete de voz correspondiente (Hong Kong o Taiwán)",
+  "tts_error_audio_output": "Error en la salida de audio del celular. Verifica el volumen de tu dispositivo",
+  "tts_error_native_engine": "Error en motor nativo: {message}",
+  "@tts_error_native_engine": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+  "tts_error_language_not_installed": "El idioma/acento ({lang}) no está instalado o no es compatible con el motor nativo de tu celular",
+  "@tts_error_language_not_installed": {
+    "placeholders": {
+      "lang": { "type": "String" }
+    }
+  },
+  "tts_error_validate_language": "No se pudo validar el idioma en tu dispositivo: {error}",
+  "@tts_error_validate_language": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "tts_error_no_audio": "No se recibieron datos de audio desde el servidor",
+  "tts_error_network": "Error de red. Verifica tu conexión a Internet para usar este motor",
+  "tts_error_connection": "Error de conexión o de síntesis: {error}",
+  "@tts_error_connection": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "tts_error_azure_api_key_empty": "Por favor, ingresa tu Clave API de Azure en Ajustes",
+  "tts_error_azure_api_key_invalid": "Clave API de Azure inválida o expirada. Verifica tus Ajustes",
+  "tts_error_azure_access_denied": "Acceso denegado a Azure. Verifica tu región y suscripción en Ajustes",
+  "tts_error_openai_api_key_empty": "Por favor, ingresa tu Clave API de OpenAI en Ajustes",
+  "tts_error_openai_api_key_invalid": "Clave API de OpenAI inválida. Verifica tus Ajustes",
+  "tts_error_openai_quota": "Límite de solicitudes de OpenAI excedido o saldo insuficiente"
 }

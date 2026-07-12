@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import 'tts_engine.dart';
 
 // Implementacion de sintesis de voz usando la API REST oficial de Microsoft Azure Speech
@@ -61,11 +63,14 @@ class AzureTtsEngine implements TtsEngine {
     _totalDuration = null;
 
     final box = Hive.box('settings');
+    final String lang = box.get('app_language', defaultValue: 'es') as String;
+    final l10n = lookupAppLocalizations(Locale(lang));
+    
     final String apiKey = box.get('azure_api_key', defaultValue: '') as String;
     final String region = box.get('azure_region', defaultValue: 'eastus') as String;
 
     if (apiKey.trim().isEmpty) {
-      _onError?.call('Por favor, ingresa tu Clave API de Azure en Ajustes');
+      _onError?.call(l10n.tts_error_azure_api_key_empty);
       return;
     }
 
@@ -97,18 +102,18 @@ class AzureTtsEngine implements TtsEngine {
 
       if (response.statusCode != 200) {
         if (response.statusCode == 401) {
-          _onError?.call('Clave API de Azure inválida o expirada. Verifica tus Ajustes');
+          _onError?.call(l10n.tts_error_azure_api_key_invalid);
         } else if (response.statusCode == 403) {
-          _onError?.call('Acceso denegado a Azure. Verifica tu región y suscripción en Ajustes');
+          _onError?.call(l10n.tts_error_azure_access_denied);
         } else {
-          _onError?.call('Error de Azure Speech (${response.statusCode}): ${response.reasonPhrase}');
+          _onError?.call(l10n.tts_error_native_engine('Azure REST (${response.statusCode})'));
         }
         return;
       }
 
       final audioBytes = response.bodyBytes;
       if (audioBytes.isEmpty) {
-        _onError?.call('El servidor de Azure devolvió un archivo de audio vacío');
+        _onError?.call(l10n.tts_error_no_audio);
         return;
       }
 
@@ -122,9 +127,9 @@ class AzureTtsEngine implements TtsEngine {
     } catch (e) {
       debugPrint('Error en Azure TTS: $e');
       if (e is SocketException || e.toString().contains('SocketException')) {
-        _onError?.call('Error de red. Verifica tu conexión a Internet para usar Azure Speech');
+        _onError?.call(l10n.tts_error_network);
       } else {
-        _onError?.call('No se pudo conectar con Azure Speech: $e');
+        _onError?.call(l10n.tts_error_connection(e.toString()));
       }
     }
   }

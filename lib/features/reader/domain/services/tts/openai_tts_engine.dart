@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import 'tts_engine.dart';
 
 // Implementacion de sintesis de voz usando la API REST oficial de OpenAI TTS
@@ -62,11 +64,14 @@ class OpenAiTtsEngine implements TtsEngine {
     _totalDuration = null;
 
     final box = Hive.box('settings');
+    final String lang = box.get('app_language', defaultValue: 'es') as String;
+    final l10n = lookupAppLocalizations(Locale(lang));
+
     final String apiKey = box.get('openai_api_key', defaultValue: '') as String;
     final String voice = box.get('openai_voice', defaultValue: 'alloy') as String;
 
     if (apiKey.trim().isEmpty) {
-      _onError?.call('Por favor, ingresa tu Clave API de OpenAI en Ajustes');
+      _onError?.call(l10n.tts_error_openai_api_key_empty);
       return;
     }
 
@@ -92,18 +97,18 @@ class OpenAiTtsEngine implements TtsEngine {
 
       if (response.statusCode != 200) {
         if (response.statusCode == 401) {
-          _onError?.call('Clave API de OpenAI inválida. Verifica tus Ajustes');
+          _onError?.call(l10n.tts_error_openai_api_key_invalid);
         } else if (response.statusCode == 429) {
-          _onError?.call('Límite de solicitudes de OpenAI excedido o saldo insuficiente');
+          _onError?.call(l10n.tts_error_openai_quota);
         } else {
-          _onError?.call('Error de OpenAI TTS (${response.statusCode}): ${response.reasonPhrase}');
+          _onError?.call(l10n.tts_error_native_engine('OpenAI REST (${response.statusCode})'));
         }
         return;
       }
 
       final audioBytes = response.bodyBytes;
       if (audioBytes.isEmpty) {
-        _onError?.call('El servidor de OpenAI devolvió un archivo de audio vacío');
+        _onError?.call(l10n.tts_error_no_audio);
         return;
       }
 
@@ -117,9 +122,9 @@ class OpenAiTtsEngine implements TtsEngine {
     } catch (e) {
       debugPrint('Error en OpenAI TTS: $e');
       if (e is SocketException || e.toString().contains('SocketException')) {
-        _onError?.call('Error de red. Verifica tu conexión a Internet para usar OpenAI TTS');
+        _onError?.call(l10n.tts_error_network);
       } else {
-        _onError?.call('No se pudo conectar con OpenAI: $e');
+        _onError?.call(l10n.tts_error_connection(e.toString()));
       }
     }
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import '../../domain/entities/reading_entry.dart';
 
+// Tarjeta que representa un texto guardado en la biblioteca
 class ReadingEntryCard extends StatelessWidget {
   final ReadingEntry entry;
   final VoidCallback onTap;
@@ -16,17 +18,23 @@ class ReadingEntryCard extends StatelessWidget {
     required this.onDelete,
   });
 
-  String _formatDate(DateTime date) {
+  // Formatea la fecha de ultima apertura de forma localizada
+  String _formatDate(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays == 0) return 'Hoy';
-    if (diff.inDays == 1) return 'Ayer';
-    if (diff.inDays < 7) return 'Hace ${diff.inDays} días';
-    return DateFormat('dd MMM yyyy', 'es').format(date);
+    final l10n = AppLocalizations.of(context)!;
+    
+    if (diff.inDays == 0) return l10n.library_date_today;
+    if (diff.inDays == 1) return l10n.library_date_yesterday;
+    if (diff.inDays < 7) return l10n.library_date_days_ago(diff.inDays.toString());
+    
+    return DateFormat('dd MMM yyyy', l10n.localeName).format(date);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -88,7 +96,7 @@ class ReadingEntryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _formatDate(entry.dateLastOpened),
+                    _formatDate(context, entry.dateLastOpened),
                     style: TextStyle(
                       fontSize: 11,
                       color: Colors.deepPurple.withValues(alpha: 0.7),
@@ -108,23 +116,23 @@ class ReadingEntryCard extends StatelessWidget {
                 if (value == 'delete') onDelete();
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'rename',
                   child: Row(
                     children: [
-                      Icon(Icons.edit_outlined, size: 18, color: Colors.black54),
-                      SizedBox(width: 10),
-                      Text('Renombrar'),
+                      const Icon(Icons.edit_outlined, size: 18, color: Colors.black54),
+                      const SizedBox(width: 10),
+                      Text(l10n.common_rename),
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
-                      SizedBox(width: 10),
-                      Text('Eliminar', style: TextStyle(color: Colors.redAccent)),
+                      const Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
+                      const SizedBox(width: 10),
+                      Text(l10n.common_delete, style: const TextStyle(color: Colors.redAccent)),
                     ],
                   ),
                 ),

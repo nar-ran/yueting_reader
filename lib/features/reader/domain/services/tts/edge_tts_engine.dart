@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:edge_tts/edge_tts.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:hive/hive.dart';
+import 'package:yueting_reader/l10n/app_localizations.dart';
 import 'tts_engine.dart';
 
 // Implementacion de sintesis de voz usando Microsoft Edge neural TTS (Online y Gratis)
@@ -61,11 +64,14 @@ class EdgeTtsEngine implements TtsEngine {
   Future<void> speak(String text, double rate) async {
     await stop();
     
+    final String lang = Hive.box('settings').get('app_language', defaultValue: 'es') as String;
+    final l10n = lookupAppLocalizations(Locale(lang));
+    
     // Convierte la velocidad de reproduccion al formato de Edge TTS (+XX% o -XX%)
     int percentage = ((rate - 1.0) * 100).round();
     String rateString = percentage >= 0 ? '+$percentage%' : '$percentage%';
     
-    // Inicializa el objeto Communicate de Edge TTS
+    // Si la velocidad es neutra
     final comm = Communicate(
       text: text,
       voice: _voice,
@@ -98,7 +104,7 @@ class EdgeTtsEngine implements TtsEngine {
       
       if (audioBytes.isEmpty) {
         if (_onError != null) {
-          _onError!('No se recibieron datos de audio desde el servidor de Microsoft Edge');
+          _onError!(l10n.tts_error_no_audio);
         }
         return;
       }
@@ -114,9 +120,9 @@ class EdgeTtsEngine implements TtsEngine {
       debugPrint('Error en Edge TTS: $e');
       if (_onError != null) {
         if (e is SocketException || e.toString().contains('SocketException') || e.toString().contains('Failed host lookup')) {
-          _onError!('Microsoft Edge TTS requiere conexión a Internet. Por favor, verifica tu red o selecciona el motor nativo offline');
+          _onError!(l10n.tts_error_network);
         } else {
-          _onError!('Error de conexión o de síntesis con Edge TTS: $e');
+          _onError!(l10n.tts_error_connection(e.toString()));
         }
       }
     }
