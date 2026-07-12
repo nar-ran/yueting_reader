@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:yueting_reader/l10n/app_localizations.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../domain/services/dictionary_service.dart';
 import 'reading_screen.dart';
 import 'package:yueting_reader/features/library/domain/entities/reading_entry.dart';
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Map<String, String>> _examples = [
     {
       'titleKey': 'example_1',
-      'text': '你好！欢迎使用阅听（YuèTīng）。\n这是一个开源 de 读听忆 (leer, escuchar y recordar) 工具。\n希望你喜欢 learning Chinese!',
+      'text': '你好！欢迎使用阅听（YuèTīng）。\n这是一个开源 de 读听忆 (leer, escuchar y recordar) 工具。\n希望 peacetime 喜欢 learning Chinese!',
     },
     {
       'titleKey': 'example_2',
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     },
     {
       'titleKey': 'example_3',
-      'text': '静夜思 (Jìng yè sī)\n床前明月光，疑是地上霜。\n举头望明月，低头思故乡。',
+      'text': '静夜思 (Jìng yè sī)\n床前明月光，疑is地上霜。\n举头望明月，低头思故乡。',
     }
   ];
 
@@ -84,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToReader() async {
     final text = _textController.text.trim();
+
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -121,15 +123,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<ThemeColors>() ?? ThemeColors.defaultColors;
+
     return ValueListenableBuilder<DictLoadingState>(
       valueListenable: _dictService.loadingState,
       builder: (context, state, child) {
         if (state.status == DictLoadingStatus.ready) {
-          return _buildMainContent();
+          return _buildMainContent(colors);
         } else if (state.status == DictLoadingStatus.error) {
-          return _buildErrorScreen(state.message);
+          return _buildErrorScreen(state.message, colors);
         } else {
-          return _buildLoaderScreen(state);
+          return _buildLoaderScreen(state, colors);
         }
       },
     );
@@ -154,10 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget _buildLoaderScreen(DictLoadingState state) {
+  Widget _buildLoaderScreen(DictLoadingState state, ThemeColors colors) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FB),
+      backgroundColor: colors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -171,23 +175,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple,
+                    color: colors.primary,
                     borderRadius: BorderRadius.circular(24.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.deepPurple.withValues(alpha: 0.3),
+                        color: colors.primary.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
                     ],
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       '阅听',
                       style: TextStyle(
                         fontSize: 42,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
                       ),
                     ),
                   ),
@@ -198,10 +202,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 _getLoaderMessage(context, state),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  color: colors.text,
                 ),
               ),
               const SizedBox(height: 24.0),
@@ -212,8 +216,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: LinearProgressIndicator(
                   value: state.progress > 0 ? state.progress : null,
                   minHeight: 10,
-                  backgroundColor: Colors.grey.shade200,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                  backgroundColor: colors.divider.withValues(alpha: 0.3),
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -221,9 +225,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 l10n.home_loader_desc,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: Colors.black54,
+                  color: colors.text.withValues(alpha: 0.6),
                   height: 1.4,
                 ),
               ),
@@ -234,9 +238,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildErrorScreen(String message) {
+  Widget _buildErrorScreen(String message, ThemeColors colors) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      backgroundColor: colors.background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
@@ -247,13 +252,13 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16.0),
               Text(
                 l10n.home_error_title,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: colors.text),
               ),
               const SizedBox(height: 8.0),
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.black54),
+                style: TextStyle(color: colors.text.withValues(alpha: 0.6)),
               ),
               const SizedBox(height: 24.0),
               ElevatedButton.icon(
@@ -261,8 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.refresh),
                 label: Text(l10n.home_retry),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  foregroundColor: Colors.white,
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -276,21 +281,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMainContent() {
+  Widget _buildMainContent(ThemeColors colors) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FB),
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(
           l10n.home_title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.text,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu_book, color: Colors.deepPurple),
+            icon: Icon(Icons.menu_book, color: colors.primary),
             tooltip: l10n.home_library_tooltip,
             onPressed: () {
               Navigator.of(context).push(
@@ -299,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.black54),
+            icon: Icon(Icons.settings_outlined, color: colors.text.withValues(alpha: 0.6)),
             tooltip: l10n.home_settings_tooltip,
             onPressed: () {
               Navigator.of(context).push(
@@ -309,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(width: 8),
         ],
-        backgroundColor: Colors.white,
+        backgroundColor: colors.cardBackground,
         elevation: 0.5,
         centerTitle: false,
       ),
@@ -324,14 +329,14 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.deepPurple.shade700, Colors.deepPurple.shade500],
+                  colors: [colors.primary, colors.primary.withValues(alpha: 0.85)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.deepPurple.withValues(alpha: 0.2),
+                    color: colors.primary.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -342,10 +347,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     l10n.home_title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
                     ),
                   ),
                   const SizedBox(height: 6.0),
@@ -353,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     l10n.home_subtitle,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: (colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text).withValues(alpha: 0.9),
                       height: 1.3,
                     ),
                   ),
@@ -374,10 +379,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       l10n.home_continue_reading,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black54,
+                        color: colors.text.withValues(alpha: 0.6),
                       ),
                     ),
                     const SizedBox(height: 12.0),
@@ -387,12 +392,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16.0),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: colors.cardBackground,
                           borderRadius: BorderRadius.circular(16.0),
-                          border: Border.all(color: Colors.deepPurple.withValues(alpha: 0.1)),
+                          border: Border.all(color: colors.primary.withValues(alpha: 0.1)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.01),
+                              color: colors.text.withValues(alpha: 0.01),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -404,12 +409,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple.withValues(alpha: 0.1),
+                                color: colors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.play_arrow_rounded,
-                                color: Colors.deepPurple,
+                                color: colors.primary,
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -421,9 +426,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     lastOpened.displayTitle,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
+                                      color: colors.text,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -431,17 +437,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     lastOpened.preview,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.black54,
+                                      color: colors.text.withValues(alpha: 0.6),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.chevron_right_rounded,
-                              color: Colors.black38,
+                              color: colors.text.withValues(alpha: 0.4),
                             ),
                           ],
                         ),
@@ -456,10 +462,10 @@ class _HomeScreenState extends State<HomeScreen> {
             // Formulario de ingreso de texto
             Text(
               l10n.home_input_section,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black54,
+                color: colors.text.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 12.0),
@@ -467,11 +473,12 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colors.cardBackground,
                 borderRadius: BorderRadius.circular(16.0),
+                border: Border.all(color: colors.divider.withValues(alpha: 0.3)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.01),
+                    color: colors.text.withValues(alpha: 0.01),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -482,31 +489,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Campo de texto del titulo
                   TextField(
                     controller: _titleController,
+                    style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 16),
                     decoration: InputDecoration(
                       hintText: l10n.home_input_title_hint,
                       border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.grey.shade400),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      hintStyle: TextStyle(color: colors.text.withValues(alpha: 0.4)),
                     ),
                   ),
-                  const Divider(height: 1.0),
+                  Divider(height: 1.0, color: colors.divider.withValues(alpha: 0.3)),
                   const SizedBox(height: 8.0),
                   // Campo de texto de caracteres chinos
                   TextField(
                     controller: _textController,
                     maxLines: 8,
                     minLines: 4,
+                    style: TextStyle(color: colors.text, fontSize: 16, height: 1.4),
                     decoration: InputDecoration(
                       hintText: l10n.home_input_hint,
                       border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.grey.shade400),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      height: 1.4,
+                      hintStyle: TextStyle(color: colors.text.withValues(alpha: 0.4)),
                     ),
                   ),
                 ],
@@ -517,10 +518,10 @@ class _HomeScreenState extends State<HomeScreen> {
             // Seccion de Ejemplos rapidos
             Text(
               l10n.home_examples_section,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Colors.black54,
+                color: colors.text.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 12.0),
@@ -537,19 +538,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: colors.cardBackground,
                           borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(color: Colors.grey.shade200),
+                          border: Border.all(color: colors.divider.withValues(alpha: 0.5)),
                         ),
                         child: Text(
                           _getExampleTitle(context, ex['titleKey']!),
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.bold,
+                            color: colors.primary,
                           ),
                         ),
                       ),
@@ -564,8 +565,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ElevatedButton(
               onPressed: _navigateToReader,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
+                backgroundColor: colors.primary,
+                foregroundColor: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
@@ -575,13 +576,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.chrome_reader_mode_outlined),
+                  Icon(Icons.chrome_reader_mode_outlined, color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text),
                   const SizedBox(width: 10),
                   Text(
                     l10n.home_start_reading,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
                     ),
                   ),
                 ],

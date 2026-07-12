@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../domain/entities/word_token.dart';
 
 // Widget que representa una palabra individual con su Hanzi y Pinyin
@@ -20,6 +21,8 @@ class WordWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<ThemeColors>() ?? ThemeColors.defaultColors;
+
     // Si es un salto de linea, fuerza el salto en el Wrap usando ancho completo
     if (token.text == '\n' || token.text == '\r') {
       return const SizedBox(width: double.infinity, height: 12);
@@ -38,7 +41,7 @@ class WordWidget extends StatelessWidget {
           style: TextStyle(
             fontSize: 22 * fontSizeMultiplier,
             fontWeight: FontWeight.w400,
-            color: Colors.black54,
+            color: colors.text.withValues(alpha: 0.6),
           ),
         ),
       );
@@ -51,16 +54,16 @@ class WordWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
         decoration: BoxDecoration(
           color: isSelected
-              ? Colors.deepPurple.withValues(alpha: 0.15)
+              ? colors.primary.withValues(alpha: 0.15)
               : isPlaying
-                  ? Colors.amber.withValues(alpha: 0.3)
+                  ? colors.accent.withValues(alpha: 0.3)
                   : Colors.transparent,
           borderRadius: BorderRadius.circular(6.0),
           border: Border.all(
             color: isSelected
-                ? Colors.deepPurple.withValues(alpha: 0.4)
+                ? colors.primary.withValues(alpha: 0.4)
                 : isPlaying
-                    ? Colors.amber.withValues(alpha: 0.7)
+                    ? colors.accent.withValues(alpha: 0.7)
                     : Colors.transparent,
             width: 1.0,
           ),
@@ -76,10 +79,10 @@ class WordWidget extends StatelessWidget {
                 fontSize: 12 * fontSizeMultiplier,
                 fontWeight: FontWeight.w500,
                 color: isSelected
-                    ? Colors.deepPurple
+                    ? colors.primary
                     : isPlaying
-                        ? Colors.amber.shade900
-                        : Colors.black45,
+                        ? colors.text
+                        : colors.text.withValues(alpha: 0.5),
                 height: 1.2,
               ),
             ),
@@ -91,10 +94,10 @@ class WordWidget extends StatelessWidget {
                 fontSize: 22 * fontSizeMultiplier,
                 fontWeight: FontWeight.w500,
                 color: isSelected
-                    ? Colors.deepPurple
+                    ? colors.primary
                     : isPlaying
-                        ? Colors.amber.shade900
-                        : Colors.black87,
+                        ? colors.text
+                        : colors.text,
                 height: 1.1,
               ),
             ),

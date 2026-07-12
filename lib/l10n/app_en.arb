@@ -106,6 +106,8 @@
   "settings_tag_free": "Free",
   "settings_tag_premium": "Premium",
   "settings_tag_api_key": "API Key",
+  "settings_theme_section": "Visual Theme",
+  "settings_theme_sub": "Select color palette for the interface",
 
   "sectionReader": "========== READER SCREEN ==========",
   "reader_title_fallback": "Reading",

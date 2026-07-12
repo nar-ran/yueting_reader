@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:yueting_reader/l10n/app_localizations.dart';
+import 'core/theme/theme_colors.dart';
 import 'features/library/domain/entities/reading_entry.dart';
 import 'features/library/domain/services/library_service.dart';
 import 'features/reader/presentation/screens/home_screen.dart';
@@ -31,6 +32,7 @@ class YuetingApp extends StatelessWidget {
       valueListenable: Hive.box('settings').listenable(),
       builder: (context, box, _) {
         final String appLang = box.get('app_language', defaultValue: 'es') as String;
+        final String activeTheme = box.get('active_theme', defaultValue: 'classic') as String;
         final Locale locale = Locale(appLang);
 
         return MaterialApp(
@@ -39,19 +41,7 @@ class YuetingApp extends StatelessWidget {
           locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple,
-              brightness: Brightness.light,
-            ),
-            scaffoldBackgroundColor: const Color(0xFFF9F9FB),
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.white,
-              elevation: 0.5,
-              scrolledUnderElevation: 1.0,
-            ),
-          ),
+          theme: ThemeColors.getThemeData(activeTheme),
           home: const HomeScreen(),
         );
       },

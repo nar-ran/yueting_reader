@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:yueting_reader/l10n/app_localizations.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../domain/entities/word_token.dart';
 
 // Modal inferior que muestra las traducciones y pinyin de la palabra seleccionada
@@ -81,6 +82,7 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
     final entry = widget.token.dictEntry;
     final hasDefinitions = entry != null && entry.definitions.isNotEmpty;
     final l10n = AppLocalizations.of(context)!;
+    final colors = Theme.of(context).extension<ThemeColors>() ?? ThemeColors.defaultColors;
     
     // Solo muestra el boton de traducir si el idioma de la app es Español
     final showTranslateButton = l10n.localeName == 'es' &&
@@ -91,9 +93,9 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 24.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      decoration: BoxDecoration(
+        color: colors.cardBackground,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -105,7 +107,7 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
               width: 48,
               height: 5,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: colors.divider,
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -119,20 +121,20 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
             children: [
               Text(
                 widget.token.text,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: colors.text,
                 ),
               ),
               const SizedBox(width: 16.0),
               Expanded(
                 child: Text(
                   widget.token.pinyin,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.deepPurple,
+                    color: colors.primary,
                   ),
                 ),
               ),
@@ -146,7 +148,7 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
               l10n.sheet_traditional(entry.traditional),
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey.shade600,
+                color: colors.text.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -160,21 +162,21 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
             children: [
               Text(
                 l10n.sheet_definitions,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black54,
+                  color: colors.text.withValues(alpha: 0.6),
                   letterSpacing: 0.5,
                 ),
               ),
               if (showTranslateButton) ...[
                 if (_isTranslating)
-                  const SizedBox(
+                  SizedBox(
                     width: 14,
                     height: 14,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                      valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                     ),
                   )
                 else
@@ -184,10 +186,10 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    icon: const Icon(Icons.g_translate_rounded, size: 14, color: Colors.deepPurple),
+                    icon: Icon(Icons.g_translate_rounded, size: 14, color: colors.primary),
                     label: Text(
                       l10n.sheet_translate_button,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colors.primary),
                     ),
                     onPressed: _translateDefinitions,
                   ),
@@ -213,18 +215,18 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
                         children: [
                           Text(
                             '$idx. ',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple,
+                              color: colors.primary,
                             ),
                           ),
                           Expanded(
                             child: Text(
                               def,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.black87,
+                                color: colors.text,
                                 height: 1.3,
                               ),
                             ),
@@ -244,7 +246,7 @@ class _TranslationBottomSheetState extends State<TranslationBottomSheet> {
                 style: TextStyle(
                   fontSize: 15,
                   fontStyle: FontStyle.italic,
-                  color: Colors.grey.shade600,
+                  color: colors.text.withValues(alpha: 0.5),
                 ),
               ),
             ),

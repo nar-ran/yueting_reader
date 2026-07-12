@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:yueting_reader/l10n/app_localizations.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../domain/entities/reading_entry.dart';
 import '../../domain/services/library_service.dart';
 import '../widgets/reading_entry_card.dart';
@@ -52,18 +53,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Future<void> _confirmDelete(ReadingEntry entry) async {
     final l10n = AppLocalizations.of(context)!;
+    final colors = Theme.of(context).extension<ThemeColors>() ?? ThemeColors.defaultColors;
+    
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: colors.cardBackground,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.library_delete_confirm_title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.library_delete_confirm_title, style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
         content: Text(
           l10n.library_delete_confirm_message(entry.displayTitle),
+          style: TextStyle(color: colors.text.withValues(alpha: 0.8)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.common_cancel, style: const TextStyle(color: Colors.black54)),
+            child: Text(l10n.common_cancel, style: TextStyle(color: colors.text.withValues(alpha: 0.6))),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -85,16 +90,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = Theme.of(context).extension<ThemeColors>() ?? ThemeColors.defaultColors;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FB),
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(
           l10n.library_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+          style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: colors.cardBackground,
         elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: colors.text),
       ),
       body: Column(
         children: [
@@ -104,12 +111,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: (v) => setState(() => _searchQuery = v),
+              style: TextStyle(color: colors.text),
               decoration: InputDecoration(
                 hintText: l10n.library_search_hint,
-                prefixIcon: const Icon(Icons.search, color: Colors.deepPurple),
+                hintStyle: TextStyle(color: colors.text.withValues(alpha: 0.4)),
+                prefixIcon: Icon(Icons.search, color: colors.primary),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
+                        icon: Icon(Icons.clear, size: 18, color: colors.text.withValues(alpha: 0.6)),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _searchQuery = '');
@@ -117,18 +126,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: colors.cardBackground,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide(color: colors.divider.withValues(alpha: 0.5)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Colors.deepPurple, width: 1.5),
+                  borderSide: BorderSide(color: colors.primary, width: 1.5),
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
@@ -145,7 +154,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     : _libraryService.search(_searchQuery);
 
                 if (entries.isEmpty) {
-                  return _buildEmptyState();
+                  return _buildEmptyState(colors);
                 }
 
                 return ListView.separated(
@@ -188,7 +197,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(ThemeColors colors) {
     final l10n = AppLocalizations.of(context)!;
     final isEmpty = _searchQuery.trim().isEmpty;
     return Center(
@@ -200,15 +209,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
             Icon(
               isEmpty ? Icons.menu_book_outlined : Icons.search_off_rounded,
               size: 72,
-              color: Colors.deepPurple.withValues(alpha: 0.2),
+              color: colors.primary.withValues(alpha: 0.2),
             ),
             const SizedBox(height: 20),
             Text(
               isEmpty ? l10n.library_empty_title : l10n.library_no_results_title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black54,
+                color: colors.text.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 8),
@@ -217,7 +226,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ? l10n.library_empty_subtitle
                   : l10n.library_no_results_subtitle,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade500, height: 1.4),
+              style: TextStyle(fontSize: 14, color: colors.text.withValues(alpha: 0.5), height: 1.4),
             ),
           ],
         ),

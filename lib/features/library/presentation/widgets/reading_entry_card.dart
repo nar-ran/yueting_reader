@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yueting_reader/l10n/app_localizations.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../domain/entities/reading_entry.dart';
 
 // Tarjeta que representa un texto guardado en la biblioteca
@@ -34,6 +35,7 @@ class ReadingEntryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = Theme.of(context).extension<ThemeColors>() ?? ThemeColors.defaultColors;
     
     return InkWell(
       onTap: onTap,
@@ -41,11 +43,11 @@ class ReadingEntryCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colors.cardBackground,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: colors.text.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -54,16 +56,16 @@ class ReadingEntryCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Izquierda: icono o indicador morado
+            // Izquierda: icono o indicador del tema
             Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: Colors.deepPurple.withValues(alpha: 0.1),
+                color: colors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Center(
-                child: Text('阅', style: TextStyle(fontSize: 22, color: Colors.deepPurple)),
+              child: Center(
+                child: Text('阅', style: TextStyle(fontSize: 22, color: colors.primary, fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(width: 14),
@@ -77,10 +79,10 @@ class ReadingEntryCard extends StatelessWidget {
                     entry.displayTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: colors.text,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -90,7 +92,7 @@ class ReadingEntryCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
+                      color: colors.text.withValues(alpha: 0.6),
                       height: 1.3,
                     ),
                   ),
@@ -99,8 +101,8 @@ class ReadingEntryCard extends StatelessWidget {
                     _formatDate(context, entry.dateLastOpened),
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.deepPurple.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w500,
+                      color: colors.primary,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
@@ -109,7 +111,7 @@ class ReadingEntryCard extends StatelessWidget {
 
             // Derecha: menu de opciones
             PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert, color: Colors.grey.shade400),
+              icon: Icon(Icons.more_vert, color: colors.divider),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               onSelected: (value) {
                 if (value == 'rename') onRename();
@@ -120,9 +122,9 @@ class ReadingEntryCard extends StatelessWidget {
                   value: 'rename',
                   child: Row(
                     children: [
-                      const Icon(Icons.edit_outlined, size: 18, color: Colors.black54),
+                      Icon(Icons.edit_outlined, size: 18, color: colors.text.withValues(alpha: 0.7)),
                       const SizedBox(width: 10),
-                      Text(l10n.common_rename),
+                      Text(l10n.common_rename, style: TextStyle(color: colors.text)),
                     ],
                   ),
                 ),

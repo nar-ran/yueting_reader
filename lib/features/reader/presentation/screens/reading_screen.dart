@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:yueting_reader/l10n/app_localizations.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../domain/entities/word_token.dart';
 import '../../domain/services/segmenter_service.dart';
 import '../../domain/services/tts/tts_engine.dart';
@@ -272,16 +273,16 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   // Barra flotante inferior de control de reproduccion de audio
-  Widget _buildPlayerBar() {
+  Widget _buildPlayerBar(ThemeColors colors) {
     if (_isSegmenting) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context)!;
     
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.cardBackground,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: colors.text.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -300,7 +301,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.stop_rounded, size: 28, color: Colors.grey),
+                      icon: Icon(Icons.stop_rounded, size: 28, color: colors.text.withValues(alpha: 0.5)),
                       onPressed: _stop,
                     ),
                     const SizedBox(width: 8),
@@ -316,13 +317,13 @@ class _ReadingScreenState extends State<ReadingScreen> {
                       child: Container(
                         width: 48,
                         height: 48,
-                        decoration: const BoxDecoration(
-                          color: Colors.deepPurple,
+                        decoration: BoxDecoration(
+                          color: colors.primary,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           _ttsState == TtsState.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                          color: Colors.white,
+                          color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
                           size: 30,
                         ),
                       ),
@@ -331,18 +332,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 ),
                 
                 // Etiqueta de estado
-                _buildStatusText(),
+                _buildStatusText(colors),
               ],
             ),
             const SizedBox(height: 8),
             // Deslizador de velocidad en tiempo real
             Row(
               children: [
-                const Icon(Icons.speed_rounded, size: 18, color: Colors.black54),
+                Icon(Icons.speed_rounded, size: 18, color: colors.text.withValues(alpha: 0.6)),
                 const SizedBox(width: 8),
                 Text(
                   l10n.reader_speed_label(_speechRate.toStringAsFixed(1)),
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colors.text),
                 ),
                 Expanded(
                   child: Slider(
@@ -350,8 +351,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
                     min: 0.1,
                     max: 1.5,
                     divisions: 14,
-                    activeColor: Colors.deepPurple,
-                    inactiveColor: Colors.deepPurple.withValues(alpha: 0.2),
+                    activeColor: colors.primary,
+                    inactiveColor: colors.primary.withValues(alpha: 0.2),
                     onChanged: _changeSpeed,
                   ),
                 ),
@@ -364,7 +365,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   // Construye la etiqueta de estado de reproduccion
-  Widget _buildStatusText() {
+  Widget _buildStatusText(ThemeColors colors) {
     final l10n = AppLocalizations.of(context)!;
     String status = l10n.reader_status_ready;
     if (_ttsState == TtsState.playing) {
@@ -377,8 +378,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: _ttsState == TtsState.playing 
-            ? Colors.amber.withValues(alpha: 0.15)
-            : Colors.grey.shade100,
+            ? colors.accent.withValues(alpha: 0.3)
+            : colors.divider.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -386,9 +387,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: _ttsState == TtsState.playing 
-              ? Colors.amber.shade900 
-              : Colors.black54,
+          color: colors.text,
         ),
       ),
     );
@@ -397,34 +396,36 @@ class _ReadingScreenState extends State<ReadingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = Theme.of(context).extension<ThemeColors>() ?? ThemeColors.defaultColors;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FB), // Fondo premium gris suave
+      backgroundColor: colors.background, // Fondo premium gris suave
       appBar: AppBar(
         title: Text(
           widget.title.isNotEmpty ? widget.title : l10n.reader_title_fallback,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.text,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: colors.cardBackground,
         elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: colors.text),
       ),
       body: _isSegmenting
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                   ),
                   const SizedBox(height: 16.0),
                   Text(
                     l10n.reader_processing,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      color: Colors.black54,
+                      color: colors.text.withValues(alpha: 0.6),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -438,11 +439,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colors.cardBackground,
                   borderRadius: BorderRadius.circular(16.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
+                      color: colors.text.withValues(alpha: 0.02),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -465,7 +466,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 ),
               ),
             ),
-      bottomNavigationBar: _buildPlayerBar(),
+      bottomNavigationBar: _buildPlayerBar(colors),
     );
   }
 }
