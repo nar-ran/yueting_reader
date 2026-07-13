@@ -678,9 +678,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildThemeAccordion(ThemeColors colors) {
     final l10n = AppLocalizations.of(context)!;
     
-    // Lista completa de los 10 temas soportados (Clasico + 9 de la imagen Cloud)
+    // Lista completa de los temas soportados (Sage por defecto + Violeta + 8 temas Cloud)
     final themes = [
-      {'id': 'classic', 'name': l10n.localeName == 'es' ? 'Clásico Violeta' : 'Classic Violet'},
+      {'id': 'classic', 'name': l10n.localeName == 'es' ? 'Clásico Salvia' : 'Classic Sage'},
+      {'id': 'violet', 'name': l10n.localeName == 'es' ? 'Clásico Violeta' : 'Classic Violet'},
       {'id': 'earthy', 'name': l10n.localeName == 'es' ? 'Nube de Atardecer' : 'Sunset Cloud'},
       {'id': 'cloud_2', 'name': l10n.localeName == 'es' ? 'Nube de Ensueño' : 'Dream Cloud'},
       {'id': 'lavender', 'name': l10n.localeName == 'es' ? 'Nube de Lavanda' : 'Lavender Cloud'},
