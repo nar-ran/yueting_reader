@@ -82,6 +82,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
     }
   }
 
+  // Guarda de forma persistente el progreso actual en Hive
+  void _saveReadingProgress(int index) {
+    if (widget.entryId != null && _tokens.isNotEmpty) {
+      final double progress = index / _tokens.length;
+      LibraryService().updateProgress(widget.entryId!, progress);
+    }
+  }
+
   // Inicializa los manejadores y configuracion del servicio TTS
   Future<void> _initTts() async {
     _ttsEngine = TtsEngineFactory.create();
@@ -120,6 +128,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
             _playingTokenIndex = matchedIndex;
             _currentSpeakTokenIndex = matchedIndex;
           });
+          _saveReadingProgress(matchedIndex);
         }
       }
     });
@@ -251,6 +260,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
       _selectedTokenIndex = index;
       _currentSpeakTokenIndex = index; // Actualiza el punto de inicio de la reproduccion al tocar
     });
+    _saveReadingProgress(index);
 
     // Si el audio se esta reproduciendo, salta inmediatamente a la palabra seleccionada
     if (_ttsState == TtsState.playing) {

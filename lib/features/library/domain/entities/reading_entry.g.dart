@@ -22,13 +22,14 @@ class ReadingEntryAdapter extends TypeAdapter<ReadingEntry> {
       text: fields[2] as String,
       dateCreated: fields[3] as DateTime,
       dateLastOpened: fields[4] as DateTime,
+      progress: fields[5] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ReadingEntry obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class ReadingEntryAdapter extends TypeAdapter<ReadingEntry> {
       ..writeByte(3)
       ..write(obj.dateCreated)
       ..writeByte(4)
-      ..write(obj.dateLastOpened);
+      ..write(obj.dateLastOpened)
+      ..writeByte(5)
+      ..write(obj.progress);
   }
 
   @override

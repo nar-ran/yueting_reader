@@ -9,8 +9,7 @@ import 'package:yueting_reader/features/library/domain/services/library_service.
 import 'package:yueting_reader/features/library/presentation/screens/library_screen.dart';
 import 'package:yueting_reader/features/settings/presentation/screens/settings_screen.dart';
 
-// Pantalla principal de la aplicacion que contiene el formulario de ingreso de texto,
-// los ejemplos rapidos, el boton de biblioteca, ajustes, e inicializa el diccionario
+// Pantalla principal de la aplicacion con header ilustrado
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -281,21 +280,94 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Genera la seccion superior de presentacion con colinas y pagoda china
+  Widget _buildLandscapeHeader(ThemeColors colors) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      height: 190,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [colors.primary.withValues(alpha: 0.12), colors.background],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Pintor vectorizado de las montañas y la pagoda
+          Positioned.fill(
+            child: CustomPaint(
+              painter: PagodaPainter(
+                primaryColor: colors.primary,
+                accentColor: colors.accent,
+              ),
+            ),
+          ),
+          // Etiquetas de titulo e info alineados
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 58, 20, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Yuè Tīng',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: colors.text.withValues(alpha: 0.5),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '阅听 ',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: colors.primary,
+                      ),
+                    ),
+                    Text(
+                      'Reader',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: colors.text,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  l10n.localeName == 'es' ? 'Tu lector universal de chino' : 'Your Universal Reading Tool',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: colors.text.withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMainContent(ThemeColors colors) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: colors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
-          l10n.home_title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: colors.text,
-          ),
-        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.menu_book, color: colors.primary),
+            icon: Icon(Icons.menu_book_rounded, color: colors.primary),
             tooltip: l10n.home_library_tooltip,
             onPressed: () {
               Navigator.of(context).push(
@@ -314,278 +386,282 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(width: 8),
         ],
-        backgroundColor: colors.cardBackground,
-        elevation: 0.5,
-        centerTitle: false,
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Tarjeta de bienvenida
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colors.primary, colors.primary.withValues(alpha: 0.85)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.primary.withValues(alpha: 0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+            // Header visual ilustrado
+            _buildLandscapeHeader(colors),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    l10n.home_title,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
-                    ),
-                  ),
-                  const SizedBox(height: 6.0),
-                  Text(
-                    l10n.home_subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: (colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text).withValues(alpha: 0.9),
-                      height: 1.3,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24.0),
+                  const SizedBox(height: 8.0),
 
-            // Seccion de Continuar leyendo
-            ValueListenableBuilder<Box<ReadingEntry>>(
-              valueListenable: LibraryService().listenable,
-              builder: (context, box, _) {
-                final lastOpened = LibraryService().getLastOpened();
-                if (lastOpened == null) return const SizedBox.shrink();
+                  // Seccion de Continuar leyendo
+                  ValueListenableBuilder<Box<ReadingEntry>>(
+                    valueListenable: LibraryService().listenable,
+                    builder: (context, box, _) {
+                      final lastOpened = LibraryService().getLastOpened();
+                      if (lastOpened == null) return const SizedBox.shrink();
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      l10n.home_continue_reading,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: colors.text.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    const SizedBox(height: 12.0),
-                    InkWell(
-                      onTap: () => _openEntry(lastOpened),
-                      borderRadius: BorderRadius.circular(16.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: colors.cardBackground,
-                          borderRadius: BorderRadius.circular(16.0),
-                          border: Border.all(color: colors.primary.withValues(alpha: 0.1)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: colors.text.withValues(alpha: 0.01),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                      final int percent = (lastOpened.readProgress * 100).clamp(0, 100).toInt();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            l10n.home_continue_reading,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: colors.text.withValues(alpha: 0.6),
                             ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
+                          ),
+                          const SizedBox(height: 12.0),
+                          InkWell(
+                            onTap: () => _openEntry(lastOpened),
+                            borderRadius: BorderRadius.circular(20.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(14.0),
                               decoration: BoxDecoration(
-                                color: colors.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(10.0),
+                                color: colors.cardBackground,
+                                borderRadius: BorderRadius.circular(20.0),
+                                border: Border.all(color: colors.divider.withValues(alpha: 0.4), width: 1.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: colors.text.withValues(alpha: 0.02),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                              child: Icon(
-                                Icons.play_arrow_rounded,
-                                color: colors.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
                                 children: [
-                                  Text(
-                                    lastOpened.displayTitle,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: colors.text,
+                                  // Miniatura
+                                  Container(
+                                    width: 52,
+                                    height: 52,
+                                    decoration: BoxDecoration(
+                                      color: colors.primary.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(14.0),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.menu_book_rounded,
+                                        color: colors.primary,
+                                        size: 26,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    lastOpened.preview,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: colors.text.withValues(alpha: 0.6),
+                                  const SizedBox(width: 14),
+                                  // Detalles de titulo y progreso
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          lastOpened.displayTitle,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: colors.text,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          l10n.localeName == 'es'
+                                              ? 'Último texto abierto · $percent%'
+                                              : 'Last opened text · $percent%',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: colors.text.withValues(alpha: 0.5),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(3),
+                                          child: LinearProgressIndicator(
+                                            value: lastOpened.readProgress,
+                                            minHeight: 4,
+                                            backgroundColor: colors.divider.withValues(alpha: 0.3),
+                                            valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  // Boton continuar
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: colors.primary, width: 1.5),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.play_arrow_rounded, color: colors.primary, size: 16),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          l10n.localeName == 'es' ? 'Seguir' : 'Continue',
+                                          style: TextStyle(
+                                            color: colors.primary,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              color: colors.text.withValues(alpha: 0.4),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24.0),
-                  ],
-                );
-              },
-            ),
-
-            // Formulario de ingreso de texto
-            Text(
-              l10n.home_input_section,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: colors.text.withValues(alpha: 0.6),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: colors.cardBackground,
-                borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(color: colors.divider.withValues(alpha: 0.3)),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.text.withValues(alpha: 0.01),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Campo de texto del titulo
-                  TextField(
-                    controller: _titleController,
-                    style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 16),
-                    decoration: InputDecoration(
-                      hintText: l10n.home_input_title_hint,
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(color: colors.text.withValues(alpha: 0.4)),
-                    ),
-                  ),
-                  Divider(height: 1.0, color: colors.divider.withValues(alpha: 0.3)),
-                  const SizedBox(height: 8.0),
-                  // Campo de texto de caracteres chinos
-                  TextField(
-                    controller: _textController,
-                    maxLines: 8,
-                    minLines: 4,
-                    style: TextStyle(color: colors.text, fontSize: 16, height: 1.4),
-                    decoration: InputDecoration(
-                      hintText: l10n.home_input_hint,
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(color: colors.text.withValues(alpha: 0.4)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24.0),
-
-            // Seccion de Ejemplos rapidos
-            Text(
-              l10n.home_examples_section,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: colors.text.withValues(alpha: 0.6),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            
-            // Fila de ejemplos
-            Row(
-              children: _examples.map((ex) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: InkWell(
-                      onTap: () => _useExample(ex),
-                      borderRadius: BorderRadius.circular(12.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-                        decoration: BoxDecoration(
-                          color: colors.cardBackground,
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(color: colors.divider.withValues(alpha: 0.5)),
-                        ),
-                        child: Text(
-                          _getExampleTitle(context, ex['titleKey']!),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: colors.primary,
                           ),
-                        ),
-                      ),
-                    ),
+                          const SizedBox(height: 24.0),
+                        ],
+                      );
+                    },
                   ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 32.0),
 
-            // Boton de accion principal
-            ElevatedButton(
-              onPressed: _navigateToReader,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primary,
-                foregroundColor: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                elevation: 2.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.chrome_reader_mode_outlined, color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text),
-                  const SizedBox(width: 10),
+                  // Formulario de ingreso de texto
                   Text(
-                    l10n.home_start_reading,
+                    l10n.home_input_section,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
+                      color: colors.text.withValues(alpha: 0.6),
                     ),
                   ),
+                  const SizedBox(height: 12.0),
+
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: colors.cardBackground,
+                      borderRadius: BorderRadius.circular(20.0),
+                      border: Border.all(color: colors.divider.withValues(alpha: 0.4), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colors.text.withValues(alpha: 0.01),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Campo de texto del titulo
+                        TextField(
+                          controller: _titleController,
+                          style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 16),
+                          decoration: InputDecoration(
+                            hintText: l10n.home_input_title_hint,
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(color: colors.text.withValues(alpha: 0.4)),
+                          ),
+                        ),
+                        Divider(height: 1.0, color: colors.divider.withValues(alpha: 0.3)),
+                        const SizedBox(height: 8.0),
+                        // Campo de texto de caracteres chinos
+                        TextField(
+                          controller: _textController,
+                          maxLines: 8,
+                          minLines: 4,
+                          style: TextStyle(color: colors.text, fontSize: 16, height: 1.4),
+                          decoration: InputDecoration(
+                            hintText: l10n.home_input_hint,
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(color: colors.text.withValues(alpha: 0.4)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
+
+                  // Seccion de Ejemplos rapidos
+                  Text(
+                    l10n.home_examples_section,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: colors.text.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 12.0),
+                  
+                  // Fila de ejemplos
+                  Row(
+                    children: _examples.map((ex) {
+                      return Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: InkWell(
+                            onTap: () => _useExample(ex),
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+                              decoration: BoxDecoration(
+                                color: colors.cardBackground,
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(color: colors.divider.withValues(alpha: 0.5)),
+                              ),
+                              child: Text(
+                                _getExampleTitle(context, ex['titleKey']!),
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: colors.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 32.0),
+
+                  // Boton de accion principal
+                  ElevatedButton(
+                    onPressed: _navigateToReader,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.primary,
+                      foregroundColor: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      elevation: 2.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.chrome_reader_mode_outlined, color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text),
+                        const SizedBox(width: 10),
+                        Text(
+                          l10n.home_start_reading,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: colors.background == const Color(0xFFFFFFFF) ? Colors.white : colors.text,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40.0),
                 ],
               ),
             ),
@@ -594,4 +670,73 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+// Pintor personalizado para dibujar montañas y pagoda estilizadas adaptables a los temas
+class PagodaPainter extends CustomPainter {
+  final Color primaryColor;
+  final Color accentColor;
+
+  PagodaPainter({required this.primaryColor, required this.accentColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Dibujo de colinas en segundo plano
+    final paintBackHills = Paint()
+      ..color = accentColor.withValues(alpha: 0.15)
+      ..style = PaintingStyle.fill;
+
+    final pathBack = Path();
+    pathBack.moveTo(0, size.height);
+    pathBack.quadraticBezierTo(size.width * 0.2, size.height * 0.45, size.width * 0.45, size.height * 0.65);
+    pathBack.quadraticBezierTo(size.width * 0.7, size.height * 0.85, size.width, size.height * 0.55);
+    pathBack.lineTo(size.width, size.height);
+    pathBack.close();
+    canvas.drawPath(pathBack, paintBackHills);
+
+    // Dibujo de colinas en primer plano
+    final paintFrontHills = Paint()
+      ..color = primaryColor.withValues(alpha: 0.12)
+      ..style = PaintingStyle.fill;
+
+    final pathFront = Path();
+    pathFront.moveTo(0, size.height);
+    pathFront.quadraticBezierTo(size.width * 0.35, size.height * 0.75, size.width * 0.65, size.height * 0.58);
+    pathFront.quadraticBezierTo(size.width * 0.82, size.height * 0.48, size.width, size.height * 0.65);
+    pathFront.lineTo(size.width, size.height);
+    pathFront.close();
+    canvas.drawPath(pathFront, paintFrontHills);
+
+    // Dibujo estilizado lineal de pagoda
+    final paintPagoda = Paint()
+      ..color = primaryColor.withValues(alpha: 0.45)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    final double px = size.width * 0.84;
+    final double py = size.height * 0.56;
+
+    // Estructuras de la pagoda de tres niveles
+    canvas.drawRect(Rect.fromLTWH(px - 14, py + 22, 28, 8), paintPagoda);
+    canvas.drawRect(Rect.fromLTWH(px - 10, py + 6, 20, 16), paintPagoda);
+    canvas.drawLine(Offset(px - 14, py + 6), Offset(px + 14, py + 6), paintPagoda);
+
+    canvas.drawRect(Rect.fromLTWH(px - 7, py - 6, 14, 12), paintPagoda);
+    canvas.drawLine(Offset(px - 10, py - 6), Offset(px + 10, py - 6), paintPagoda);
+
+    canvas.drawRect(Rect.fromLTWH(px - 4, py - 16, 8, 10), paintPagoda);
+    canvas.drawLine(Offset(px - 6, py - 16), Offset(px + 6, py - 16), paintPagoda);
+
+    // Aguja superior
+    canvas.drawLine(Offset(px, py - 16), Offset(px, py - 24), paintPagoda);
+    
+    // Sol de fondo minimalista
+    final paintSun = Paint()
+      ..color = primaryColor.withValues(alpha: 0.15)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset(px - 34, py - 16), 12, paintSun);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

@@ -73,6 +73,14 @@ class LibraryService {
     await _safeBox.put(id, updated);
   }
 
+  // Actualiza el progreso de lectura de un texto
+  Future<void> updateProgress(String id, double progress) async {
+    final entry = _safeBox.get(id);
+    if (entry == null) return;
+    final updated = entry.copyWith(progress: progress);
+    await _safeBox.put(id, updated);
+  }
+
   // Cambia el titulo de una lectura existente
   Future<void> renameEntry(String id, String newTitle) async {
     final entry = _safeBox.get(id);

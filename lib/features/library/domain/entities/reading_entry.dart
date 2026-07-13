@@ -20,12 +20,16 @@ class ReadingEntry extends HiveObject {
   @HiveField(4)
   late DateTime dateLastOpened;
 
+  @HiveField(5)
+  double? progress;
+
   ReadingEntry({
     required this.id,
     required this.title,
     required this.text,
     required this.dateCreated,
     required this.dateLastOpened,
+    this.progress = 0.0,
   });
 
   // Devuelve una vista previa del texto limitada a 100 caracteres
@@ -42,10 +46,14 @@ class ReadingEntry extends HiveObject {
     return firstLine.length <= 20 ? firstLine : '${firstLine.substring(0, 20)}…';
   }
 
+  // Devuelve el progreso de lectura, cayendo al valor inicial si es nulo
+  double get readProgress => progress ?? 0.0;
+
   ReadingEntry copyWith({
     String? title,
     String? text,
     DateTime? dateLastOpened,
+    double? progress,
   }) {
     return ReadingEntry(
       id: id,
@@ -53,6 +61,7 @@ class ReadingEntry extends HiveObject {
       text: text ?? this.text,
       dateCreated: dateCreated,
       dateLastOpened: dateLastOpened ?? this.dateLastOpened,
+      progress: progress ?? this.progress,
     );
   }
 }
