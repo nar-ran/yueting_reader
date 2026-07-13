@@ -1,4 +1,4 @@
-package com.example.yueting_reader
+package com.nkl.yueting_reader
 
 import io.flutter.embedding.android.FlutterActivity
 
